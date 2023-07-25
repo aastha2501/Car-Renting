@@ -1,0 +1,17 @@
+E:\car renting\backend\BAL\bin\Debug\net6.0\BAL.deps.json
+E:\car renting\backend\BAL\bin\Debug\net6.0\BAL.dll
+E:\car renting\backend\BAL\bin\Debug\net6.0\BAL.pdb
+E:\car renting\backend\BAL\bin\Debug\net6.0\DAL.dll
+E:\car renting\backend\BAL\bin\Debug\net6.0\Shared.dll
+E:\car renting\backend\BAL\bin\Debug\net6.0\DAL.pdb
+E:\car renting\backend\BAL\bin\Debug\net6.0\Shared.pdb
+E:\car renting\backend\BAL\obj\Debug\net6.0\BAL.csproj.AssemblyReference.cache
+E:\car renting\backend\BAL\obj\Debug\net6.0\BAL.GeneratedMSBuildEditorConfig.editorconfig
+E:\car renting\backend\BAL\obj\Debug\net6.0\BAL.AssemblyInfoInputs.cache
+E:\car renting\backend\BAL\obj\Debug\net6.0\BAL.AssemblyInfo.cs
+E:\car renting\backend\BAL\obj\Debug\net6.0\BAL.csproj.CoreCompileInputs.cache
+E:\car renting\backend\BAL\obj\Debug\net6.0\BAL.csproj.CopyComplete
+E:\car renting\backend\BAL\obj\Debug\net6.0\BAL.dll
+E:\car renting\backend\BAL\obj\Debug\net6.0\refint\BAL.dll
+E:\car renting\backend\BAL\obj\Debug\net6.0\BAL.pdb
+E:\car renting\backend\BAL\obj\Debug\net6.0\ref\BAL.dll

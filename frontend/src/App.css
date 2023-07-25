@@ -1,4 +1,4 @@
-.App {
+/* .App {
   text-align: center;
 }
 
@@ -35,4 +35,41 @@
   to {
     transform: rotate(360deg);
   }
+} */
+.homeWrapper {
+  /* background-image: url('https://images.unsplash.com/photo-1540760938999-077b8231d890?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1171&q=80') ; */
+  height: 88vh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-position: center center;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+.btnDarkColor {
+  padding: 10px 20px;
+    border-radius: 20px;
+    outline: none;
+    border: none;
+    background-color: rgb(158, 12, 12);
+    color: white;
+    font-size: 15px;
+    cursor: pointer;
+    margin-left: 10px;
+}
+.btnDarkColor:hover{
+  opacity: 0.7;
+}
+.textAlign {
+  text-align: center;
+}
+.loader {
+  position: fixed;
+  z-index: 1031;
+  top: 50%;
+  left: 50%;
+  
+  transform: translate(-50%, -50%);
 }

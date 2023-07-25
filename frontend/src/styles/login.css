@@ -1,0 +1,10 @@
+.loginWrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.form {
+    width: 460px;
+    background-color: #e8e8eb;
+    padding: 1.5rem 2rem;
+}

@@ -1,0 +1,227 @@
+/* google fonts */
+/* @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200;300&family=Roboto:wght@900&display=swap'); */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+body {
+    font-family: 'Roboto', sans-serif;
+}
+.username {
+    font-weight: bold;
+    color: rgb(158, 12, 12);
+}
+.navbarProfile {
+    height: 40px;
+    border-radius: 50%;
+}
+.navbar {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    height: 5rem;
+    background-color: #e8e8eb;
+}
+.navbar .logo {
+    cursor: pointer;
+}
+a {
+    text-decoration:none;
+}
+.navbar .logo h1 {
+    color: black;
+}
+.navbar .logo span {
+    color: rgb(158, 12, 12);
+}
+.navbar .navItems ul{
+    list-style: none;
+}
+.navbar .navItems ul li {
+    display: inline;
+}
+.navbar .navItems ul li a {
+    text-decoration: none;
+    padding: 10px 2px;
+    font-size: 16px;
+    position: relative;
+    margin: 0 10px;
+    font-weight: 600;
+    color: gray;
+}
+
+.navItems .dropDown {
+    display: inline-block;
+    position: relative;
+}
+.navItems .dropDown .dropDownContent a, .navItems .dropDown:hover .dropDownContent{
+    display: block;
+}
+.navItems .dropDown .dropDownContent {
+    position: absolute;
+    background-color:#cbcbce;
+    right: 0;
+    min-width: 135px;
+    top:30px;
+    left: 11px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    padding: 5px;
+    animation: dropAnimate .5s;
+}   
+@keyframes dropAnimate {
+    0% {top: 60px;}
+    100% {top: 30px;}
+}
+
+.navbar .navItems ul li a::after {
+    content: "";
+    height: 1.5px;
+    width: 0;
+    background-color: rgb(158, 12, 12);
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    transition: all 0.5s ease-in;
+}
+.navbar .navItems ul li .active, .navbar .navItems ul li a:hover:not(.active) {
+    color: black;
+}
+.navbar .navItems ul li .active::after, .navbar .navItems ul li a:hover:not(.acitve)::after {
+    width: 100%;
+}
+.navItems .dropDown .dropDownContent a:hover::after, .navItems .dropDown .dropDownContent  {
+    display: none;
+} 
+.navbar .navBtn .link{
+    padding: 10px 20px;
+    border-radius: 20px;
+    outline: none;
+    border: none;
+    background-color: rgb(158, 12, 12);
+    color: white;
+    font-size: 15px;
+    cursor: pointer;
+    margin-left: 10px;
+}
+.navbar .navBtn .loginBtn {
+    background-color: white;
+    color: black;
+}
+.navbar .navBtn button:hover {
+    opacity: 0.7;
+}
+
+/* menu bar */
+.navItems input {
+    display: none;
+} 
+.menuBar i {
+    cursor: pointer;
+    font-size: 17px;
+}
+
+.sideBar ul {
+    list-style: none;
+    background-color: antiquewhite;
+} 
+.sibling .closeTab, .navItems .menuBar  {
+    display: none;
+}
+
+@media screen and (max-width: 1126px) {
+    .navItems { 
+        order: 3;
+    }
+    .sibling {
+        display: none;
+    }
+    .sibling {
+        z-index: 1;
+        background-color: rgb(230 230 230);
+        position: absolute;
+        top: 0;
+        right: 0;
+        height: 100%;
+        width: 40%;
+        animation: animate .6s;
+    }   
+    .sibling li a::after {
+        content: "";
+        height: 1.5px;
+        width: 0;
+        background-color: rgb(84, 4, 4);
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        transition: all 0.5s ease-in;
+    }
+    .navbar .navItems ul li a:hover:not(.acitve)::after {
+        width: 0%;
+    }
+   
+    @keyframes animate {
+        0% {width: 0; opacity: 0;}
+        100% {width: 40%; opacity: 1;}
+    }
+    .sibling li a {
+        display: block;
+    }
+    .navItems .dropDown .dropDownContent {
+        position: relative;
+        top: 0;
+        width: 90%;
+        animation: none;
+    }
+    .navItems .menuBar{
+        display: block;
+        visibility: none;
+    }
+    input[type=checkbox]:checked ~ .sibling{
+        padding-top: 2rem;
+        display: block;
+    }
+     
+    input[type=checkbox]:checked ~ .menuBar{
+        position: absolute;
+        top: 10px;
+        z-index: 2;
+        right: 16px;
+    }
+}
+
+@media screen and (max-width:990px) {
+    .navbar {
+        justify-content: center;
+    }
+    .navBtn {
+       margin-left: 17rem;
+       margin-right: 1rem;
+    }
+}
+
+@media screen and (max-width:565px){
+    .navBtn {
+        margin-left: 6rem;
+        margin-right: 1rem;
+    }
+}
+@media screen and (max-width:390px){
+    .navBtn {
+        margin-left: 0.7rem;
+    }
+}
+.closeTab i{
+    font-size: 1.5rem;
+}
+.closeTab {
+    margin-top: 10px;
+    margin-left: 90%;
+    cursor: pointer;
+}
+
+/* change bar to cross icon */
+#onClick:checked ~ .menuBar i::before {
+    content: "\f00d";
+    color: black;
+}
