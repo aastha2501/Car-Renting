@@ -13,6 +13,6 @@ namespace BAL.Services
         Task<Car> Add(ProductRequestModel model);
         Task<IEnumerable<Car>> GetAll();
         Task<Guid> Delete(Guid id);
-        
+        Task<ProductRequestModel> GetCarById(Guid id);
     }
 }

@@ -53,7 +53,7 @@ namespace backend.Controllers
             var response = new ApiResponse();
             try
             {
-                    var user = await _userService.GetUserById(userId);
+                var user = await _userService.GetUserById(userId);
                 if(user != null)
                 {
                     response.Data = user;
@@ -68,6 +68,25 @@ namespace backend.Controllers
                 return BadRequest(response);
             }
         }
+        [HttpGet("getCar/{id:guid}")]
+        public async Task<IActionResult> GetCarById(Guid id)
+        {
+            var response = new ApiResponse();
+            try
+            {
+                    var res = await _productService.GetCarById(id);
+                response.Data = res;
+                return Ok(response.Data);
+            }
+            catch(Exception ex)
+            {
+                response.Success = false;
+                response.ErrorMessage = ex.Message;
+                return BadRequest(response);
+            }
+        }
+
+
         [HttpPut("update")]
         public async Task<IActionResult> UpdateProfile([FromForm] ProfileRequestModel model)
         {
@@ -75,7 +94,7 @@ namespace backend.Controllers
             var response = new ApiResponse();
             try
             {
-                if (model.Image != null)4
+                if (model.Image != null)
                 {
                     var fileResult = SaveImage(model.Image);
                     model.ImagePath = fileResult.Item1;  //getting the path of the image

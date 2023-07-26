@@ -20,6 +20,35 @@ namespace BAL.Services.Implementation
 
         }
 
+        public async Task<ProductRequestModel> GetCarById(Guid id)
+        {
+            //repo
+            try
+            {
+                var res = await _carRepository.GetById(id);
+
+                if (res != null)
+                {
+                    var product = new ProductRequestModel()
+                    {
+                        CarModel = res.Model, 
+                        Brand = res.Brand,
+                        PricePerHour = res.PricePerHour,
+                        ImagePath = res.ImageUrl
+                    };
+                    return product;
+                } 
+                else
+                {
+                    throw new ApplicationException("Unable to find this product");
+                }
+               
+            }
+            catch(Exception ex)
+            {
+                throw ex;
+            }
+        }
         public async Task<Car> Add(ProductRequestModel model)
         {
             try

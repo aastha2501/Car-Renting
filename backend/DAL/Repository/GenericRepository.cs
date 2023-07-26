@@ -29,12 +29,12 @@ namespace DAL.Repository
         //    var user = await _userManager.GetUserIdAsync(id);
         //    return user;
         //}
-        public T GetById(object id)
+        public async Task<T> GetById(object id)
         {
             return table.Find(id);
         }
 
-        public  IQueryable<T> GetAll()
+        public IQueryable<T> GetAll()
         {
             IQueryable<T> set = table;
             return set;
@@ -84,18 +84,18 @@ namespace DAL.Repository
             return (IEnumerable<T>)query.ToListAsync();
         }
 
-        public async Task<T> GetByIdAsync(Guid id, params Expression<Func<T, object>>[] includes)
-        {
-            var result = GetAll();
-            if (includes.Any())
-            {
-                foreach (var include in includes)
-                {
-                    result = result.Include(include);
-                }
-            }
-            return await result.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
-        }
+        //public async Task<T> GetByIdAsync(Guid id, params Expression<Func<T, object>>[] includes)
+        //{
+        //    var result = GetAll();
+        //    if (includes.Any())
+        //    {
+        //        foreach (var include in includes)
+        //        {
+        //            result = result.Include(include);
+        //        }
+        //    }
+        //    return await result.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
+        //}
         public T GetFirstOrDefaultBy(Expression<Func<T, bool>> condition)
         {
             return _dbContext.Set<T>().Where(condition).FirstOrDefault(); ;

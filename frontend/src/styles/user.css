@@ -1,0 +1,14 @@
+.rent {
+    background-color: #e8e8eb;
+    padding: 1rem 2rem;
+    /* border: 2px solid rgb(158, 12, 12); */
+}
+.bookBtn {
+    background-color: rgb(158, 12, 12);
+    color: white;
+    margin-top: 10px;
+    border-radius: 0;
+}
+.bookBtn:hover {
+    background-color: rgb(215, 61, 61);
+}
