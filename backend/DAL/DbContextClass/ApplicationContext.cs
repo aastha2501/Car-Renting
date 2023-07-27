@@ -55,5 +55,6 @@ namespace DAL.DbContextClass
         }
         public DbSet<Car> Cars { get; set; }
         public DbSet<BookedCar> BookedCars { get; set; }
+        public DbSet<Brand> Brands { get; set; }
     }
 }

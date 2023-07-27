@@ -9,9 +9,10 @@ using System.Threading.Tasks;
 
 namespace BAL.Services
 {
-    public interface IUserService
+    public interface IAccountService
     {
         Task<User> GetUserById(string id);
         Task<ProfileResponseModel> UpdateProfile(ProfileRequestModel model, string id);
+        
     }
 }

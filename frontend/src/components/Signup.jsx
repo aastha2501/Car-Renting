@@ -69,25 +69,25 @@ export default function Signup() {
                             <input type="text" name="lastName" id="lastName" className="form-control" onChange={formik.handleChange} onBlur={formik.handleBlur} value={formik.values.lastName} />
                         </div>
                     </div>
-                    <div className="mb-3">
+                    <div className="mb-2">
                         <label htmlFor="email" className="form-label">Email</label>
                         <input type="email" name="email" id="email" className="form-control" onChange={formik.handleChange} onBlur={formik.handleBlur} value={formik.values.email} />
                         {formik.touched.email && formik.errors.email ? <div className='form-error'>{formik.errors.email}</div> : null}
 
                     </div>
-                    <div className="mb-3">
+                    <div className="mb-2">
                         <label htmlFor="password" className="form-label">Password</label>
                         <input type="password" name="password" id="password" className="form-control" onChange={formik.handleChange} onBlur={formik.handleBlur} value={formik.values.password} />
                         {formik.touched.password && formik.errors.password ? <div className='form-error'>{formik.errors.password}</div> : null}
 
                     </div>
-                    <div className="mb-3">
+                    <div className="mb-2">
                         <label htmlFor="confirmPassword" className="form-label">Confirm Password</label>
                         <input type="password" name="confirmPassword" id="confirmPassword" className="form-control" onChange={formik.handleChange} onBlur={formik.handleBlur} value={formik.values.confirmPassword} />
                         {formik.touched.confirmPassword && formik.errors.confirmPassword ? <div className='form-error'>{formik.errors.confirmPassword}</div> : null}
 
                     </div>
-                    <div className="mb-3">
+                    <div className="mb-2">
                         <button type="submit" className="btnDarkColor">Sign up</button>
                     </div>
                     <div style={{ textAlign: "center" }}>

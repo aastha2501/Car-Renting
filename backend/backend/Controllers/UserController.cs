@@ -14,10 +14,10 @@ namespace backend.Controllers
     public class UserController : ControllerBase
     {
         private readonly IProductService _productService;
-        private readonly IUserService _userService;
+        private readonly IAccountService _userService;
         private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public UserController(IProductService productService, IUserService userService, IWebHostEnvironment webHostEnvironment)
+        public UserController(IProductService productService, IAccountService userService, IWebHostEnvironment webHostEnvironment)
         {
             _productService = productService;
             _userService = userService;
@@ -68,13 +68,14 @@ namespace backend.Controllers
                 return BadRequest(response);
             }
         }
+       
         [HttpGet("getCar/{id:guid}")]
         public async Task<IActionResult> GetCarById(Guid id)
         {
             var response = new ApiResponse();
             try
             {
-                    var res = await _productService.GetCarById(id);
+                var res = await _productService.GetCarById(id);
                 response.Data = res;
                 return Ok(response.Data);
             }
@@ -85,7 +86,6 @@ namespace backend.Controllers
                 return BadRequest(response);
             }
         }
-
 
         [HttpPut("update")]
         public async Task<IActionResult> UpdateProfile([FromForm] ProfileRequestModel model)
@@ -117,6 +117,23 @@ namespace backend.Controllers
             }
             }
 
+        [HttpGet("searchCarByBrand/{id:guid}")]
+        public async Task<IActionResult> SearchByBrand(Guid id)
+        {
+            var response = new ApiResponse();
+            try
+            {
+                var res = await _productService.SearchByBrand(id);
+                response.Data = res;
+                return Ok(response.Data);
+            } catch(Exception ex)
+            {
+                response.Success = false;
+                response.ErrorMessage = ex.Message;
+                return BadRequest(response);
+            }
+        }
+
         [NonAction]
         public Tuple<string, string> SaveImage(IFormFile imageFile)
         {
@@ -146,5 +163,7 @@ namespace backend.Controllers
             }
         }
 
+       
+       
     }
 }

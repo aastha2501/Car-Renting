@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DAL.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20230724080548_image-field-in-user")]
-    partial class imagefieldinuser
+    [Migration("20230726132738_car-table-updated")]
+    partial class cartableupdated
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -55,19 +55,29 @@ namespace DAL.Migrations
                     b.ToTable("BookedCars");
                 });
 
+            modelBuilder.Entity("DAL.Model.Brand", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Brands");
+                });
+
             modelBuilder.Entity("DAL.Model.Car", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("Brand")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<Guid>("BrandId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Image")
                         .IsRequired()
@@ -84,7 +94,12 @@ namespace DAL.Migrations
                     b.Property<decimal>("PricePerHour")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<int>("Seats")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("BrandId");
 
                     b.ToTable("Cars");
                 });
@@ -168,17 +183,17 @@ namespace DAL.Migrations
                         {
                             Id = "b74ddd14-6340-4840-95c2-db12554843e5",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "13beaa36-ec8d-413d-b330-ea9b6a0c8527",
+                            ConcurrencyStamp = "72a799d3-8abc-4cd3-b3b7-394727ab004c",
                             Email = "admin@gmail.com",
                             EmailConfirmed = false,
                             FirstName = "Admin",
                             LockoutEnabled = false,
                             NormalizedEmail = "admin@gmail.com",
                             NormalizedUserName = "admin@gmail.com",
-                            PasswordHash = "AQAAAAEAACcQAAAAEBMJWOlVO7uQDNzV166VDGgSWXq15Q3Q/6kcqgAd02vlfbq32CjTn8spphwNZJCMhg==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEEo+NzeWN+CWbtq4ajG7vK/2jjy1ueDIsSEWQroP2nAJYxVVRnB1A819QEc8G1VXNQ==",
                             PhoneNumber = "1234567890",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "38bb0024-d687-4366-9b3a-082adb83f1ea",
+                            SecurityStamp = "d74cb12a-8b3e-4616-8fc9-25da65efd61f",
                             TwoFactorEnabled = false,
                             UserName = "Admin"
                         });
@@ -359,6 +374,17 @@ namespace DAL.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("DAL.Model.Car", b =>
+                {
+                    b.HasOne("DAL.Model.Brand", "Brand")
+                        .WithMany("Cars")
+                        .HasForeignKey("BrandId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Brand");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -408,6 +434,11 @@ namespace DAL.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("DAL.Model.Brand", b =>
+                {
+                    b.Navigation("Cars");
                 });
 #pragma warning restore 612, 618
         }

@@ -12,10 +12,10 @@ namespace Shared.DTO
     public class ProductRequestModel
     {
         public string CarModel { get; set; }
-        public string Brand { get; set; }
+        public Guid BrandId { get; set; }
+        public int Seats { get; set; }
         [DefaultValue(0)]
         public decimal PricePerHour { get; set; }
-        public string? Description { get; set; }
         public IFormFile? Image { get; set; }
         public string? ImageName { get; set; }  
         public string? ImagePath{ get; set; }

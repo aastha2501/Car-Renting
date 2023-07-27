@@ -10,9 +10,13 @@ namespace BAL.Services
 {
     public interface IProductService
     {
-        Task<Car> Add(ProductRequestModel model);
-        Task<IEnumerable<Car>> GetAll();
-        Task<Guid> Delete(Guid id);
+        Task<Car> AddCar(ProductRequestModel model);
+        Task<IEnumerable<ProductResponseModel>> GetAll();
+        Task<Guid> DeleteCar(Guid id);
+        Task<Brand> AddBrand(BrandRequestModel model);
         Task<ProductRequestModel> GetCarById(Guid id);
+        Task<IEnumerable<Brand>> GetAllBrands();
+        Task<Car> EditCarDetails(Guid id, ProductRequestModel model);
+        Task<IEnumerable<Car>> SearchByBrand(Guid id);
     }
 }

@@ -19,9 +19,55 @@ namespace backend.Controllers
             _productService = productService;
             _webHostEnvironment = webHostEnvironment;   
         }
-     
+
+        [HttpGet("allBrands")]
+        public async Task<IActionResult> GetBrands()
+        {
+            var response = new ApiResponse();
+            try
+            {
+                var res = _productService.GetAllBrands();
+                if (res != null)
+                {
+                    response.Data = res;
+                    return Ok(response.Data);
+                }
+                throw new Exception("not found");
+            }
+            catch (Exception ex)
+            {
+                response.Success = false;
+                response.ErrorMessage = ex.Message;
+                return BadRequest(response);
+            }
+        }
+
+        [HttpPost("addbrand")]
+        public async Task<IActionResult> AddBrand(BrandRequestModel model)
+        {
+            var response = new ApiResponse();
+            try
+            {
+                var res = await _productService.AddBrand(model);
+                if (res != null)
+                {
+                    response.Success = true;
+                    response.Data = model;
+                    return Ok(response);
+                }
+                throw new Exception("failed to add");
+
+            }
+            catch (Exception ex)
+            {
+                response.Success = false;
+                response.ErrorMessage = ex.Message;
+                return BadRequest(response);
+            }
+        }
+
         [HttpPost("add")]
-        public async Task<IActionResult> Add( [FromForm] ProductRequestModel model)
+        public async Task<IActionResult> AddCar( [FromForm] ProductRequestModel model)
         {
             var response = new ApiResponse();
             try
@@ -33,7 +79,7 @@ namespace backend.Controllers
                     model.ImageName = fileResult.Item2; //getting the name of the image
                     model.ImagePath = fileResult.Item1;  //getting the path of the image
 
-                    var res = _productService.Add(model);
+                    var res = _productService.AddCar(model);
                     if (res != null)
                     {
                         response.Success = true;
@@ -50,7 +96,7 @@ namespace backend.Controllers
                 response.ErrorMessage = ex.Message;
                 return BadRequest(response);
             }
-        }
+         }
 
         [NonAction]
         public Tuple<string, string> SaveImage(IFormFile imageFile)
@@ -82,12 +128,12 @@ namespace backend.Controllers
         }
 
         [HttpDelete("delete")]
-        public async Task<IActionResult> Delete(Guid id)
+        public async Task<IActionResult> DeleteCar(Guid id)
         {
             var response = new ApiResponse();
             try
             {
-                var res = await _productService.Delete(id);
+                var res = await _productService.DeleteCar(id);
                 if(res != null)
                 {
                     response.Success = true;
@@ -95,6 +141,37 @@ namespace backend.Controllers
                 return Ok(response);
             }
             catch(Exception ex)
+            {
+                response.Success = false;
+                response.ErrorMessage = ex.Message;
+                return BadRequest(response);
+            }
+        }
+
+        [HttpPut("editCarDetails/{id:guid}")]
+        public async Task<IActionResult> EditCarDetails(Guid id, [FromForm] ProductRequestModel model)
+        {
+            var response = new ApiResponse();
+            try
+            {
+                if (model.Image != null)
+                {
+                    var fileResult = SaveImage(model.Image);
+
+                    model.ImageName = fileResult.Item2; //getting the name of the image
+                    model.ImagePath = fileResult.Item1;  //getting the path of the image
+
+                }
+                var res = _productService.EditCarDetails(id, model);
+                if (res != null)
+                {
+                    response.Success = true;
+                    response.Data = model;
+                    return Ok(response);
+                }
+                throw new Exception("Unable to edit");
+            }
+            catch (Exception ex)
             {
                 response.Success = false;
                 response.ErrorMessage = ex.Message;

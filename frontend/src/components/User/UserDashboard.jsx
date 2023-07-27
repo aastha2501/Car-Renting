@@ -4,6 +4,7 @@ import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import { useFormik } from "formik";
 import "../../styles/user.css";
+import Spinner from 'react-bootstrap/Spinner';
 
 export default function Dashboard() {
 
@@ -11,10 +12,12 @@ export default function Dashboard() {
   const [show, setShow] = useState(false);
   const [productId, setProductId] = useState();
   const [carData, setCarData] = useState();
+  const [loading, setLoading] = useState(false);
 
   var token = JSON.parse(localStorage.getItem("token"))
 
   useEffect(() => {
+    setLoading(true);
     axios
       .get("https://localhost:7104/api/User/getall", {
         headers: {
@@ -24,8 +27,10 @@ export default function Dashboard() {
       .then((response) => {
         console.log(response.data);
         setData(response.data);
+        setLoading(false);
       }).catch((error) => {
         console.log(error);
+        setLoading(false);
       })
   }, []);
 
@@ -73,91 +78,97 @@ export default function Dashboard() {
         return hoursDifference;
   }
   return (
-    <div className='mt-5 container'>
-      <div className='row'>
-        {
-          data && data.map((item, i) => {
-            return <div key={i} className="col-lg-4 mb-4">
-              <div className="card">
-                <img src={item.imageUrl} alt="" className="card-img-top" />
-                <div className="card-body">
-                  <h5 className="card-title"><span>{item.model} </span><span>{item.brand}</span></h5>
-                  <p>&#x20b9; {item.pricePerHour}</p>
-                  <p className="card-text">{item.description}</p>
-                  <button className='btn btn-primary' onClick={() => handleRentClick(item.id)}>Rent Now</button>
-                </div>
+    <>
+   
+   { 
+    loading ? <Spinner animation="grow" variant="secondary" />
+: ( <div className='mt-5 container'>
+<div className='row'>
+  {
+    data && data.map((item, i) => {
+      return <div key={i} className="col-lg-3 mb-4">
+        <div className="card">
+          <img src={item.image} alt="" className="card-img-top" />
+          <div className="card-body">
+            <h5 className="card-title"><span>{item.carModel} </span><span>{item.brand}</span></h5>
+            <p>Price per hour: &#x20b9; {item.pricePerHour}</p>
+            <p className="card-text">Seats: {item.seats}</p>
+            <button className='btn btn-primary' onClick={() => handleRentClick(item.id)}>Rent Now</button>
+          </div>
+        </div>
+      </div>
+    })
+  }
+</div>
+
+
+<div>
+  {
+    show && (
+      <Modal show={show}>
+        <Modal.Header>
+          <Modal.Title>Book now</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <form onSubmit={formik.handleSubmit} className=''>
+            <div className="mb-3 d-flex justify-content-between">
+              <div>
+                <p><b>Model: </b>{carData.carModel}</p>
+                <p><b>Brand: </b>{carData.brand}</p>
+                <p><b>Price per hour: </b>&#x20b9;{carData.pricePerHour}</p>
+              </div>
+              <div>
+                <img src={carData.imagePath} height="100px" alt='image' />
               </div>
             </div>
-          })
-        }
-      </div>
+            <div className="mb-3">
+              <label htmlFor="startDate">From:</label>
 
+              <input
+                id="startDate"
+                type="datetime-local"
+                name="startDate"
+                className='form-control' onChange={formik.handleChange} onBlur={formik.handleBlur} value={formik.values.startDate}/>
+            </div>
+            <div className="mb-5">
+              <label htmlFor="endDate">To:</label>
 
-      <div>
-        {
-          show && (
-            <Modal show={show}>
-              <Modal.Header>
-                <Modal.Title>Book now</Modal.Title>
-              </Modal.Header>
-              <Modal.Body>
-                <form onSubmit={formik.handleSubmit} className=''>
-                  <div className="mb-3 d-flex justify-content-between">
-                    <div>
-                      <p><b>Model: </b>{carData.carModel}</p>
-                      <p><b>Brand: </b>{carData.brand}</p>
-                      <p><b>Price per hour: </b>&#x20b9;{carData.pricePerHour}</p>
-                    </div>
-                    <div>
-                      <img src={carData.imagePath} height="100px" alt='image' />
-                    </div>
-                  </div>
-                  <div className="mb-3">
-                    <label htmlFor="startDate">From:</label>
+              <input type="datetime-local" id="endDate"
+                name="endDate" 
+                min="2018-06-07T00:00" max="2024-06-14T00:00" className='form-control' onChange={formik.handleChange} onBlur={formik.handleBlur} value={formik.values.endDate}/>
+            </div>
 
-                    <input
-                      id="startDate"
-                      type="datetime-local"
-                      name="startDate"
-                      className='form-control' onChange={formik.handleChange} onBlur={formik.handleBlur} value={formik.values.startDate}/>
-                  </div>
-                  <div className="mb-5">
-                    <label htmlFor="endDate">To:</label>
+            <div className="mb-3">
+              <label htmlFor="total-rent">Total Rent: </label>
+              
+              {
+                formik.values.startDate && formik.values.endDate && (
+                  <span className='rent'> &#x20b9;
+                   {calculateHoursDiff() * carData.pricePerHour}
+                  </span>
+                )
+              }
+              
 
-                    <input type="datetime-local" id="endDate"
-                      name="endDate" 
-                      min="2018-06-07T00:00" max="2024-06-14T00:00" className='form-control' onChange={formik.handleChange} onBlur={formik.handleBlur} value={formik.values.endDate}/>
-                  </div>
+            </div>
+            <div className='mb-3 text-center'>
+              <button className='btn bookBtn' type='submit'>Book Now</button>
+            </div>
+          </form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleClose}>
+            Close
+          </Button>
 
-                  <div className="mb-3">
-                    <label htmlFor="total-rent">Total Rent: </label>
-                    
-                    {
-                      formik.values.startDate && formik.values.endDate && (
-                        <span className='rent'> &#x20b9;
-                         {calculateHoursDiff() * carData.pricePerHour}
-                        </span>
-                      )
-                    }
-                    
-
-                  </div>
-                  <div className='mb-3 text-center'>
-                    <button className='btn bookBtn' type='submit'>Book Now</button>
-                  </div>
-                </form>
-              </Modal.Body>
-              <Modal.Footer>
-                <Button variant="secondary" onClick={handleClose}>
-                  Close
-                </Button>
-
-              </Modal.Footer>
-            </Modal>
-          )
-        }
-      </div>
-    </div>
+        </Modal.Footer>
+      </Modal>
+    )
+  }
+</div>
+</div>)
+   } 
+   </>
   )
 }
 

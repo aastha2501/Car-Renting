@@ -9,10 +9,11 @@ using System.Threading.Tasks;
 
 namespace BAL.Services.Implementation
 {
-    public class UserService: IUserService
+    public class AccountService: IAccountService
     {
         private readonly UserManager<User> _userManager;
-        public UserService(UserManager<User> userManager)
+      
+        public AccountService(UserManager<User> userManager)
         {
             _userManager = userManager;
         }
@@ -66,6 +67,6 @@ namespace BAL.Services.Implementation
                 throw ex;
             }
         }
-
+      
     }
 }

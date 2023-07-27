@@ -4,6 +4,7 @@ using DAL.DbContextClass;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DAL.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    partial class ApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20230726093702_db-init")]
+    partial class dbinit
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -76,6 +78,10 @@ namespace DAL.Migrations
 
                     b.Property<Guid>("BrandId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Image")
                         .IsRequired()
@@ -181,17 +187,17 @@ namespace DAL.Migrations
                         {
                             Id = "b74ddd14-6340-4840-95c2-db12554843e5",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "72a799d3-8abc-4cd3-b3b7-394727ab004c",
+                            ConcurrencyStamp = "08f77389-2252-47e2-a3ac-c55c20094ec6",
                             Email = "admin@gmail.com",
                             EmailConfirmed = false,
                             FirstName = "Admin",
                             LockoutEnabled = false,
                             NormalizedEmail = "admin@gmail.com",
                             NormalizedUserName = "admin@gmail.com",
-                            PasswordHash = "AQAAAAEAACcQAAAAEEo+NzeWN+CWbtq4ajG7vK/2jjy1ueDIsSEWQroP2nAJYxVVRnB1A819QEc8G1VXNQ==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEKe2Zf5nsHBLeSV75JJLHb6i0BiOeVJyRrHhdNiY8D7V9nrdyGybAU36pRtWo9zPcA==",
                             PhoneNumber = "1234567890",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "d74cb12a-8b3e-4616-8fc9-25da65efd61f",
+                            SecurityStamp = "e1f7dad2-70e3-4b05-bfbe-2d619d85d2e8",
                             TwoFactorEnabled = false,
                             UserName = "Admin"
                         });
