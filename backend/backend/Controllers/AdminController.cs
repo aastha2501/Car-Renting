@@ -127,7 +127,7 @@ namespace backend.Controllers
             }
         }
 
-        [HttpDelete("delete")]
+        [HttpDelete("delete/{id:guid}")]
         public async Task<IActionResult> DeleteCar(Guid id)
         {
             var response = new ApiResponse();

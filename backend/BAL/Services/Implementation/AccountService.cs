@@ -55,7 +55,7 @@ namespace BAL.Services.Implementation
                     response.Email = user.Email;
                     response.FirstName = user.FirstName;
                     response.LastName = user.LastName;
-                    response.ImagePath = user.Image;
+                    response.Image= user.Image;
 
                     return response;
                 } else {

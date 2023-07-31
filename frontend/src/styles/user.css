@@ -12,3 +12,63 @@
 .bookBtn:hover {
     background-color: rgb(215, 61, 61);
 }
+.user-home-wrapper {
+    /* background-image: linear-gradient(to right top, #ebfaf9, #cefbf5, #affbee, #90fbe3, #71fad4); */
+    /* height: 100vh; */
+    /* padding: 2rem; */
+    /* background-image: url('https://images.unsplash.com/photo-1501987584265-0b7af0e74421?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80') ;
+    height: 88.8vh;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    
+    background-position: center center;
+    background-size: cover;
+    background-repeat: no-repeat; */
+}
+.card {
+    width: 280px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0px 0px 14px -2px #bebebe;
+    transition: 0.2s ease-in-out;
+  }
+  .img {
+    width: 100%;
+    height: 10em;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    /* background: linear-gradient(#7980c5, #9198e5); */
+    display: flex;
+    align-items: top;
+    justify-content: right;
+  }
+  
+  .icon-box {
+    padding: 6px 1rem;
+    background-color: #7980c5;
+    border-radius: 10px;
+    text-align: center;
+  }
+  
+  .btn span {
+    font-family: system-ui;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #fff;
+  }
+ 
+  .main-pickup {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    background-color: rgba(248, 248, 248, 0.6);
+    padding: 1rem;
+  }
+  .pickup-date {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }

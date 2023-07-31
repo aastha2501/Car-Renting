@@ -13,6 +13,7 @@ namespace Shared.DTO
         public decimal PricePerHour { get; set; }
         public int Seats { get; set; }
         public string Image { get; set; }
+        public Guid ProductId { get; set; }
 
     }
 }

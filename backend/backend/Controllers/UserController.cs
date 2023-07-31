@@ -46,28 +46,7 @@ namespace backend.Controllers
             }
         }
 
-        [HttpGet("profile")]
-        public async Task<IActionResult> GetUserById()
-        {
-            var userId = User.FindFirstValue(ClaimTypes.Name);
-            var response = new ApiResponse();
-            try
-            {
-                var user = await _userService.GetUserById(userId);
-                if(user != null)
-                {
-                    response.Data = user;
-                    return Ok(response.Data);
-                }
-                throw new Exception("Failed to get user data");
-            }
-            catch (Exception ex)
-            {
-                response.Success = false;
-                response.ErrorMessage = ex.Message;
-                return BadRequest(response);
-            }
-        }
+        
        
         [HttpGet("getCar/{id:guid}")]
         public async Task<IActionResult> GetCarById(Guid id)
@@ -134,6 +113,60 @@ namespace backend.Controllers
             }
         }
 
+        [HttpPost("bookCar")]
+        public async Task<IActionResult> BookCar(BookingCarRequestModel model)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.Name);
+            var response = new ApiResponse();
+            try
+            {
+                var res = await _productService.BookingCar(model, userId);
+                response.Data = res;
+                return Ok(response.Data);
+            }
+            catch (Exception ex)
+            {
+                response.Success = false;
+                response.ErrorMessage = ex.Message;
+                return BadRequest(response);
+            }
+        }
+        [HttpPost("findCars")]
+        public async Task<IActionResult> FindCars(FindCarModel model)
+        {
+            var response = new ApiResponse();
+            try
+            {
+                var res = await _productService.FindAvailability(model);
+                response.Data = res;
+                return Ok(response.Data);
+            }
+            catch (Exception ex)
+            {
+                response.Success = false;
+                response.ErrorMessage = ex.Message;
+                return BadRequest(response);
+            }
+        }
+
+        [HttpGet("getBookings")]
+        public async Task<IActionResult> GetAllBookingsOfAUser()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.Name);
+            var response = new ApiResponse();
+            try
+            {
+                var res = await _productService.GetAllBookingsOfAUser(userId);
+                response.Data = res;
+                return Ok(response.Data);
+            }
+            catch(Exception ex)
+            {
+                response.Success = false;
+                response.ErrorMessage = ex.Message;
+                return BadRequest(response);
+            }
+        }
         [NonAction]
         public Tuple<string, string> SaveImage(IFormFile imageFile)
         {
@@ -163,7 +196,7 @@ namespace backend.Controllers
             }
         }
 
-       
+         
        
     }
 }

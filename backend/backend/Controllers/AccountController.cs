@@ -1,9 +1,11 @@
-﻿using DAL.Model;
+﻿using BAL.Services;
+using DAL.Model;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using Shared.Common;
 using Shared.DTO;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -19,12 +21,14 @@ namespace backend.Controllers
         private readonly UserManager<User> _userManager;
         private readonly IConfiguration _config;
         private readonly RoleManager<IdentityRole> _roleManager;
-        
-        public AccountController(UserManager<User> userManager, IConfiguration config, RoleManager<IdentityRole> roleManager)
+        private readonly IAccountService _accountService;
+
+        public AccountController(UserManager<User> userManager, IConfiguration config, RoleManager<IdentityRole> roleManager, IAccountService accountService)
         {
             _userManager = userManager;
             _config = config;
             _roleManager = roleManager;
+            _accountService = accountService;
         }
 
         [HttpPost("login")]
@@ -118,6 +122,29 @@ namespace backend.Controllers
             };
             return BadRequest(new { response.ErrorMessage });
             
+        }
+
+        [HttpGet("profile")]
+        public async Task<IActionResult> GetUserById()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.Name);
+            var response = new ApiResponse();
+            try
+            {
+                var user = await _accountService.GetUserById(userId);
+                if (user != null)
+                {
+                    response.Data = user;
+                    return Ok(response.Data);
+                }
+                throw new Exception("Failed to get user data");
+            }
+            catch (Exception ex)
+            {
+                response.Success = false;
+                response.ErrorMessage = ex.Message;
+                return BadRequest(response);
+            }
         }
     }
 }

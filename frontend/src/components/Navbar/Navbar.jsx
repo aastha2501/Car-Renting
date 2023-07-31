@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import "../../styles/navbar.css";
 import { Link, useNavigate } from 'react-router-dom';
 import jwt from "jwt-decode";
 import axios from 'axios';
+import { NavbarContext } from '../../MyContext';
 
 export default function Navbar() {
   const [role, setRole] = useState();
@@ -11,22 +12,24 @@ export default function Navbar() {
   const [userId, setUserId] = useState();
   const [image, setImage] = useState();
 
+  const { user } = useContext(NavbarContext);
+
   const navigate = useNavigate();
   var t = JSON.parse(localStorage.getItem("token"))
   useEffect(() => {
     if (t) {
-      //get the user data
-      axios
-        .get("https://localhost:7104/api/User/profile", {
-          headers: {
-            "Authorization": `Bearer ${t}`
-          }
-        })
-        .then((response) => {
-          setImage(response.data.image);
-        }).catch((error) => {
-          console.log(error);
-        })
+      // axios
+      //   .get("https://localhost:7104/api/User/profile", {
+      //     headers: {
+      //       "Authorization": `Bearer ${t}`
+      //     }
+      //   })
+      //   .then((response) => {
+      //     console.log(response.data);
+      //     setImage(response.data.image);
+      //   }).catch((error) => { 
+      //     con sole.log(error);
+      //   })
 
       setToken(t);
 
@@ -46,9 +49,11 @@ export default function Navbar() {
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("image");
-    navigate("/login");
+    localStorage.removeItem("dates");
+    navigate("/");
     setToken(null);
   }
+
   return (
     <>
       <div className="navbar">
@@ -67,20 +72,20 @@ export default function Navbar() {
           {
             token && role == "User" ? (
               <ul className="sibling">
-                <li><a href="" className="">Home</a></li>
-                <li><a href="">Bookings</a></li>
+                <Link className='link' to="/dashboard">Home</Link>
+                <Link className='link' to={`/bookings/${userId}`}>Bookings</Link>
               </ul>
 
             ) : (token && role == "Admin" ? (
               <ul className="sibling">
-                <li><a href="" className="">Home</a></li>
+                <li><Link to="/admin">Home</Link></li>
                 <li><a href="">Bookings</a></li>
                 <li><a href="">All Brands</a></li>
               </ul>
 
             ) : (
               <ul className="sibling">
-                <li><a href="" className="">Home</a></li>
+                <Link className='link' to="/">Home</Link>
               </ul>
 
             ))
@@ -90,14 +95,14 @@ export default function Navbar() {
         {
           token ? <div className="navBtn">
             {
-              role === "User" && image !== null ? (
+              role === "User" && user?.image !== null ? (
                 <Link to={`/profile/${userId}`}>
-                  <img src={image} className='navbarProfile' alt="User profile" /> <span className='username'>{userName}</span>
+                  <img src={user?.image} className='navbarProfile' alt="User profile" /> <span className='username'>{user?.firstName}</span>
                 </Link>
 
               ) : (
                 role === "User" && image === null ? (
-                  <Link to={`/profile/${userId}`}><i className="fa-solid fa-user"></i>  <span className='username'>{userName}</span></Link>
+                  <Link to={`/profile/${userId}`}><i className="fa-solid fa-user"></i>  <span className='username'>{user?.firstName}</span></Link>
                 ) : (
                   <Link className='username'><i className="fa-solid fa-user"></i> Admin</Link>
                 )
@@ -117,89 +122,3 @@ export default function Navbar() {
   )
 }
 
-{/* 
-
-import React, { useState, useEffect } from 'react';
-
-const Navbar = () => {
-  const [userRole, setUserRole] = useState(null);
-  const [userToken, setUserToken] = useState(null);
-
-  // Assume you have a function to check the user's role and token, and it returns a Promise
-  const checkUserRoleAndToken = async () => {
-    // Your logic to get the user's role and token
-    // For example, you can fetch it from the server using the token
-    // const response = await fetch('/api/getUserRoleAndToken', {
-    //   headers: {
-    //     Authorization: `Bearer ${userToken}`,
-    //   },
-    // });
-    // const data = await response.json();
-    // setUserRole(data.role);
-  };
-
-  useEffect(() => {
-    // Call the function to check the user's role and token when the component mounts
-    checkUserRoleAndToken();
-  }, []);
-
-  // List of navbar items for different roles
-  const guestItems = [
-    { text: 'Home', link: '/' },
-    { text: 'Login', link: '/login' },
-    { text: 'Register', link: '/register' },
-  ];
-
-  const userItems = [
-    { text: 'Home', link: '/' },
-    { text: 'Profile', link: '/profile' },
-    { text: 'Logout', link: '/logout' },
-  ];
-
-  const adminItems = [
-    { text: 'Home', link: '/' },
-    { text: 'Admin Dashboard', link: '/admin' },
-    { text: 'Logout', link: '/logout' },
-  ];
-
-  // Function to render the list items based on the user's role
-  const renderNavItems = () => {
-    if (!userRole) {
-      // If userRole is not available yet (e.g., still loading), show nothing
-      return null;
-    }
-
-    if (userRole === 'guest') {
-      return guestItems.map((item, index) => (
-        <li key={index}>
-          <a href={item.link}>{item.text}</a>
-        </li>
-      ));
-    } else if (userRole === 'user') {
-      return userItems.map((item, index) => (
-        <li key={index}>
-          <a href={item.link}>{item.text}</a>
-        </li>
-      ));
-    } else if (userRole === 'admin') {
-      return adminItems.map((item, index) => (
-        <li key={index}>
-          <a href={item.link}>{item.text}</a>
-        </li>
-      ));
-    }
-
-    // Handle other roles or unknown roles here
-    return null;
-  };
-
-  return (
-    <nav>
-      <ul>
-        {renderNavItems()}
-      </ul>
-    </nav>
-  );
-};
-
-export default Navbar; */}

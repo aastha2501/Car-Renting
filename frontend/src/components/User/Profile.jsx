@@ -1,12 +1,14 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import "../../styles/profile.css";
 import jwt from "jwt-decode";
 import axios from 'axios';
 import { useFormik } from "formik";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { NavbarContext } from '../../MyContext';
 
 export default function Profile() {
+  const { user, setUser } = useContext(NavbarContext);
   const inputRef = useRef(null);
   const [image, setImage] = useState();
 
@@ -33,7 +35,7 @@ export default function Profile() {
   var token = JSON.parse(localStorage.getItem("token"));
   useEffect(() => {
     axios
-      .get("https://localhost:7104/api/User/profile", {
+      .get("https://localhost:7104/api/Account/profile", {
         headers: {
           "Authorization": `Bearer ${token}`
         }
@@ -49,7 +51,7 @@ export default function Profile() {
         formik.setFieldValue('email', email);
         formik.setFieldValue('firstName', firstName);
         formik.setFieldValue('lastName', lastName);
-        //  formik.setFieldValue('image', image);
+        formik.setFieldValue('image', image);
 
         if (response.data.image != null) {
           setImage(response.data.image);
@@ -76,7 +78,7 @@ export default function Profile() {
       image: ''
     },
     onSubmit: values => {
-     
+      debugger;
       const formData = new FormData();
       formData.append('FirstName', values.firstName);
       formData.append('LastName', values.lastName);
@@ -91,12 +93,14 @@ export default function Profile() {
           }
         })
         .then((response) => {
-
+          console.log(response.data);
           setFirstName(response.data.firstName);
           setLastName(response.data.lastName);
           setEmail(response.data.email);
 
-          toast.success("Profile updated successfully");
+          setUser(response.data);
+
+          toast.success("Profile updated successfully!!");
         }).catch((error) => {
           console.log(error);
         })
@@ -104,6 +108,8 @@ export default function Profile() {
     validate,
 
   });
+
+
   return (
     <div className='profileWrapper'>
 
@@ -160,14 +166,16 @@ export default function Profile() {
               </div>
             </div>
             {/* phone number */}
-            <div className="mb-3" style={{display: "none"}}>
+            <div className="mb-3" style={{ display: "none" }}>
               <label htmlFor="email" className="form-label">Email</label>
               <input type="email" name="email" id="email" className="form-control" onChange={formik.handleChange} onBlur={formik.handleBlur} value={formik.values.email} />
 
             </div>
 
           </div>
+
           <div className="mb-3 text-center">
+            <hr />
             <button type="submit" className="btnDarkColor">Save</button>
           </div>
         </form>

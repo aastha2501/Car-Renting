@@ -9,7 +9,7 @@ export default function Signup() {
     const validate = values => {
         let errors = {}
 
-        if(!values.firstName) {
+        if (!values.firstName) {
             errors.firstName = "Name is Required"
         }
         if (!values.password) {
@@ -40,14 +40,14 @@ export default function Signup() {
         onSubmit: values => {
             console.log(values);
             axios
-            .post("https://localhost:7104/api/Account/signup", values)
-            .then((response) => {
-                console.log(response);
-                navigate("/login");
-            }).catch((error) => {
-                console.log(error); 
-            })
-            
+                .post("https://localhost:7104/api/Account/signup", values)
+                .then((response) => {
+                    console.log(response);
+                    navigate("/login");
+                }).catch((error) => {
+                    console.log(error);
+                })
+
         },
         validate
     });

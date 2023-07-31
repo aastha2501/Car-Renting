@@ -5,6 +5,11 @@ import Modal from 'react-bootstrap/Modal';
 import { useFormik } from "formik";
 import "../../styles/user.css";
 import Spinner from 'react-bootstrap/Spinner';
+import Home from '../Home';
+import Dates from '../Dates';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 export default function Dashboard() {
 
@@ -15,17 +20,36 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(false);
 
   var token = JSON.parse(localStorage.getItem("token"))
+  const d = JSON.parse(localStorage.getItem("dates"));
 
+
+  const calculateHoursDiff = () => {
+    const { startDate, endDate } = formik.values;
+    if (!startDate || !endDate) return;
+
+    const startDateTime = new Date(startDate);
+    const endDateTime = new Date(endDate);
+    const timeDifference = endDateTime - startDateTime;
+
+    const hoursDifference = timeDifference / (1000 * 60 * 60);
+    // setTotalPrice(hoursDifference);
+    return hoursDifference;
+  }
+
+
+
+  // console.log(d);
   useEffect(() => {
+
     setLoading(true);
     axios
-      .get("https://localhost:7104/api/User/getall", {
+      .post("https://localhost:7104/api/User/findCars", d, {
         headers: {
           "Authorization": `Bearer ${token}`
         }
       })
       .then((response) => {
-        console.log(response.data);
+        // console.log(response.data);
         setData(response.data);
         setLoading(false);
       }).catch((error) => {
@@ -34,23 +58,66 @@ export default function Dashboard() {
       })
   }, []);
 
+  // book now
   const formik = useFormik({
     initialValues: {
       startDate: '',
       endDate: ''
     },
-    onSubmit: (values, {resetForm}) => {
-      console.log(values);
-      resetForm();
-    }
-  })
+    onSubmit: (values, { resetForm }) => {
 
+      // resetForm();
+
+      // console.log(productId);
+      const price = carData.pricePerHour;
+      // console.log(price);
+      const hours = calculateHoursDiff();
+      // console.log(hours);
+      const total = price * hours;
+      // console.log(total);
+
+      var data = {
+        ProductId: productId,
+        StartDate: values.startDate,
+        EndDate: values.endDate,
+        TotalPrice: total
+      }
+      console.log(data);
+
+      axios
+        .post("https://localhost:7104/api/User/bookCar", data, {
+          headers: {
+            "Authorization": `Bearer ${token}`
+          }
+        }).then((response) => {
+          console.log(response.data);
+          setShow(false);
+          toast.success("Car Booked successfully!!");
+        }).catch((error) => {
+          console.log(error);
+        })
+      // https://localhost:7104/api/User/bookCar
+
+    },
+
+  })
+  useEffect(() => {
+    const storedData = localStorage.getItem('dates');
+    if (storedData) {
+      const parsedData = JSON.parse(storedData);
+      formik.setValues(parsedData);
+    }
+  }, []);
   const handleClose = () => {
     setShow(false);
+    // formik.resetForm();
   }
 
   const handleRentClick = (productId) => {
-    console.log(productId);
+    // console.log(productId);
+    setProductId(productId);
+
+
 
     axios.get("https://localhost:7104/api/User/getCar/" + productId, {
       headers: {
@@ -59,6 +126,7 @@ export default function Dashboard() {
     }).then((response) => {
       console.log(response.data);
       setCarData(response.data);
+
       setShow(true);
     }).catch((error) => {
       console.log(error);
@@ -66,173 +134,117 @@ export default function Dashboard() {
 
   }
 
-  const calculateHoursDiff = () => {
-    const {startDate, endDate} = formik.values;
-    if(!startDate || !endDate) return;
 
-        const startDateTime = new Date(startDate);
-        const endDateTime = new Date(endDate);
-        const timeDifference = endDateTime - startDateTime;
-    
-        const hoursDifference = timeDifference / (1000 * 60 * 60);
-        return hoursDifference;
-  }
+  //   var price = calculateHoursDiff()*carData.pricePerHour;
+  // console.log(price);
   return (
     <>
-   
-   { 
-    loading ? <Spinner animation="grow" variant="secondary" />
-: ( <div className='mt-5 container'>
-<div className='row'>
-  {
-    data && data.map((item, i) => {
-      return <div key={i} className="col-lg-3 mb-4">
-        <div className="card">
-          <img src={item.image} alt="" className="card-img-top" />
-          <div className="card-body">
-            <h5 className="card-title"><span>{item.carModel} </span><span>{item.brand}</span></h5>
-            <p>Price per hour: &#x20b9; {item.pricePerHour}</p>
-            <p className="card-text">Seats: {item.seats}</p>
-            <button className='btn btn-primary' onClick={() => handleRentClick(item.id)}>Rent Now</button>
-          </div>
-        </div>
-      </div>
-    })
-  }
-</div>
 
+      {
+        loading ? <div className='homeWrapper'><Spinner animation="grow" variant="secondary" /></div>
+          : (<div className='user-home-wrapper container'>
 
-<div>
-  {
-    show && (
-      <Modal show={show}>
-        <Modal.Header>
-          <Modal.Title>Book now</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <form onSubmit={formik.handleSubmit} className=''>
-            <div className="mb-3 d-flex justify-content-between">
-              <div>
-                <p><b>Model: </b>{carData.carModel}</p>
-                <p><b>Brand: </b>{carData.brand}</p>
-                <p><b>Price per hour: </b>&#x20b9;{carData.pricePerHour}</p>
-              </div>
-              <div>
-                <img src={carData.imagePath} height="100px" alt='image' />
-              </div>
+            <ToastContainer
+              position="bottom-center"
+              autoClose={5000}
+              hideProgressBar={false}
+              newestOnTop={false}
+              closeOnClick
+              rtl={false}
+              pauseOnFocusLoss
+              draggable
+              pauseOnHover
+              theme="dark"
+            />
+            <div className='pickup-date mt-4'>
+              <Dates />
             </div>
-            <div className="mb-3">
-              <label htmlFor="startDate">From:</label>
-
-              <input
-                id="startDate"
-                type="datetime-local"
-                name="startDate"
-                className='form-control' onChange={formik.handleChange} onBlur={formik.handleBlur} value={formik.values.startDate}/>
-            </div>
-            <div className="mb-5">
-              <label htmlFor="endDate">To:</label>
-
-              <input type="datetime-local" id="endDate"
-                name="endDate" 
-                min="2018-06-07T00:00" max="2024-06-14T00:00" className='form-control' onChange={formik.handleChange} onBlur={formik.handleBlur} value={formik.values.endDate}/>
-            </div>
-
-            <div className="mb-3">
-              <label htmlFor="total-rent">Total Rent: </label>
-              
+            <div className='row mt-4'>
               {
-                formik.values.startDate && formik.values.endDate && (
-                  <span className='rent'> &#x20b9;
-                   {calculateHoursDiff() * carData.pricePerHour}
-                  </span>
+                data && data.map((item, i) => {
+                  return <div key={i} className="col-lg-3 mb-4">
+                    <div className="card">
+                      <img src={item.image} alt="" className="card-img-top img" />
+                      <div className="card-body">
+                        <h5 className="card-title"><span>{item.carModel} </span><span>{item.brand}</span></h5>
+                        <p><b>Price per hour:</b> &#x20b9; {item.pricePerHour}</p>
+                        <p className="card-text"><b>Seats:</b> {item.seats}</p>
+                        <button className='btn btn-dark' onClick={() => handleRentClick(item.productId)}><span>Rent Now</span></button>
+                      </div>
+                    </div>
+                  </div>
+                })
+              }
+            </div>
+
+
+            <div>
+              {
+                show && (
+                  <Modal show={show}>
+                    <Modal.Header>
+                      <Modal.Title>Book now</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                      <form onSubmit={formik.handleSubmit} className=''>
+                        <div className="mb-3 d-flex justify-content-between">
+                          <div>
+                            <p><b>Model: </b>{carData.carModel}</p>
+                            <p><b>Brand: </b>{carData.brand}</p>
+                            <p><b>Price per hour: </b>&#x20b9;{carData.pricePerHour}</p>
+                          </div>
+                          <div>
+                            <img src={carData.image} height="100px" alt='image' />
+                          </div>
+                        </div>
+                        <div className="mb-3">
+                          <label htmlFor="startDate">From:</label>
+
+                          <input
+                            id="startDate"
+                            type="datetime-local"
+                            name="startDate"
+                            className='form-control' onChange={formik.handleChange} onBlur={formik.handleBlur} value={formik.values.startDate} readOnly />
+                        </div>
+                        <div className="mb-5">
+                          <label htmlFor="endDate">To:</label>
+
+                          <input type="datetime-local" id="endDate"
+                            name="endDate"
+                            min="2018-06-07T00:00" max="2024-06-14T00:00" className='form-control' onChange={formik.handleChange} onBlur={formik.handleBlur} value={formik.values.endDate} readOnly />
+                        </div>
+
+                        <div className="mb-3">
+                          <label htmlFor="total-rent">Total Rent: </label>
+
+                          {
+                            formik.values.startDate && formik.values.endDate && (
+                              <span className='rent'> &#x20b9;
+                                {calculateHoursDiff() * carData.pricePerHour}
+                              </span>
+                            )
+                          }
+
+
+                        </div>
+                        <div className='mb-3 text-center'>
+                          <button className='btn bookBtn' type='submit'>Book Now</button>
+                        </div>
+                      </form>
+                    </Modal.Body>
+                    <Modal.Footer>
+                      <Button variant="secondary" onClick={handleClose}>
+                        Close
+                      </Button>
+
+                    </Modal.Footer>
+                  </Modal>
                 )
               }
-              
-
             </div>
-            <div className='mb-3 text-center'>
-              <button className='btn bookBtn' type='submit'>Book Now</button>
-            </div>
-          </form>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleClose}>
-            Close
-          </Button>
-
-        </Modal.Footer>
-      </Modal>
-    )
-  }
-</div>
-</div>)
-   } 
-   </>
+          </div>)
+      }
+    </>
   )
 }
 
-
-
-// import { useFormik } from 'formik';
-
-// const YourFormComponent = () => {
-//   const formik = useFormik({
-//     initialValues: {
-//       startDate: '', // Assuming your Formik form has a field for the start date with the name "startDate"
-//       endDate: '',   // Assuming your Formik form has a field for the end date with the name "endDate"
-//     },
-//     onSubmit: values => {
-//       // Handle form submission here
-//     },
-//   });
-
-//   const calculateHoursDifference = () => {
-//     const { startDate, endDate } = formik.values;
-    
-//     if (!startDate || !endDate) {
-//       // Handle validation here if either startDate or endDate is not selected
-//       return;
-//     }
-
-//     const startDateTime = new Date(startDate);
-//     const endDateTime = new Date(endDate);
-//     const timeDifference = endDateTime - startDateTime;
-
-//     const hoursDifference = timeDifference / (1000 * 60 * 60);
-//     return hoursDifference;
-//   };
-
-//   return (
-//     <form onSubmit={formik.handleSubmit}>
-//       <label>Start Date:</label>
-//       <input
-//         type="datetime-local"
-//         name="startDate"
-//         value={formik.values.startDate}
-//         onChange={formik.handleChange}
-//       />
-//       <br />
-
-//       <label>End Date:</label>
-//       <input
-//         type="datetime-local"
-//         name="endDate"
-//         value={formik.values.endDate}
-//         onChange={formik.handleChange}
-//       />
-//       <br />
-
-//       <button type="submit">Submit</button>
-
-//       {/* Display the calculated hours difference */}
-//       {formik.values.startDate && formik.values.endDate && (
-//         <div>
-//           Hours Difference: {calculateHoursDifference()}
-//         </div>
-//       )}
-//     </form>
-//   );
-// };
-
-// export default YourFormComponent;

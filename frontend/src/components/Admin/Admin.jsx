@@ -5,12 +5,15 @@ import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import axios from 'axios';
 import Form from 'react-bootstrap/Form';
+import Feedback from 'react-bootstrap/esm/Feedback';
 
 export default function Admin() {
 
   const [show, setShow] = useState(false);
   const [data, setData] = useState();
   const [brands, setBrands] = useState();
+  const [productId, setProductId] = useState();
+  const [deletePopup, setDeletePopup] = useState(false);
 
   const token = JSON.parse(localStorage.getItem('token'));
 
@@ -21,7 +24,7 @@ export default function Admin() {
       }
     })
       .then((res) => {
-        
+        // console.log(res.data);
         setData(res.data);
       }).catch((err) => {
         console.log(err);
@@ -33,7 +36,7 @@ export default function Admin() {
         "Authorization": `Bearer ${token}`
       }
     }).then((res) => {
-      
+
       setBrands(res.data.result);
     }).catch((err) => {
       console.log(err);
@@ -42,11 +45,10 @@ export default function Admin() {
   }, [data]);
 
 
-  // console.log(brands);
   const validate = values => {
     let errors = {}
     if (!values.model) {
-      errors.model= 'Required'
+      errors.model = 'Required'
     } else if (!values.brand) {
       errors.brand = 'Required'
     } else if (!values.seats) {
@@ -73,7 +75,7 @@ export default function Admin() {
       formData.append('PricePerHour', values.pricePerHour);
       formData.append('Seats', values.seats);
       formData.append('Image', values.image);
-   
+
 
       //axios call
       axios
@@ -84,7 +86,7 @@ export default function Admin() {
           }
         })
         .then((response) => {
-        
+
           setShow(false);
 
         }).catch((error) => {
@@ -104,6 +106,35 @@ export default function Admin() {
     setShow(false);
   }
 
+  const handleDelete = (id) => {
+    console.log(id);
+    setProductId(id);
+    setDeletePopup(true);
+  }
+
+  const handleDeleteSuccess = (productId) => {
+
+    axios
+      .delete("https://localhost:7104/api/Admin/delete/" + productId, {
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
+      })
+      .then((response) => {
+        console.log(response.data);
+        setDeletePopup(false);
+      }).catch((error) => {
+        console.log(error);
+      })
+  }
+
+  const EditProduct = (id) => {
+
+  }
+
+  const handleDeleteClose = () => {
+    setDeletePopup(false);
+  }
   return (
 
     <div>
@@ -138,8 +169,8 @@ export default function Admin() {
                     <td>{item.seats}</td>
                     <td>{item.pricePerHour}/-</td>
                     <td>
-                      {/* <button className='btn btn-danger' onClick={() => handleDelete(item.id)}>Delete</button>
-                      {" "} <button className="btn btn-info" onClick={() => EditProduct(item.id)}>Edit</button> */}
+                      <button className='btn btn-danger' onClick={() => handleDelete(item.productId)}>Delete</button>
+                      {" "} <button className="btn btn-info" onClick={() => EditProduct(item.productId)}>Edit</button>
                     </td>
                   </tr>
                 })
@@ -151,7 +182,7 @@ export default function Admin() {
       </div>
       {
         show && (
-          <Modal show={show}>
+          <Modal show={show} centered>
             <Modal.Header>
               <Modal.Title>Add Product</Modal.Title>
             </Modal.Header>
@@ -160,7 +191,7 @@ export default function Admin() {
 
                 <Form.Select name="brand" onChange={formik.handleChange} aria-label="Default select example">
                   <option>Open this select menu</option>
-                  { 
+                  {
                     brands && brands.map((item, i) => {
                       return <option key={i} value={item.id}>{item.name}</option>
                     })
@@ -172,13 +203,13 @@ export default function Admin() {
                   <input type="text" name="model" id="model" className="form-control" onChange={formik.handleChange} onBlur={formik.handleBlur} value={formik.values.model} />
                   {formik.touched.model && formik.errors.model ? <div className='form-error'>{formik.errors.model}</div> : null}
                 </div>
-              
+
                 <div className="mb-3">
                   <label htmlFor="seats" className="form-label">Seats</label>
                   <input type="number" name="seats" id="seats" className="form-control" onChange={formik.handleChange} onBlur={formik.handleBlur} value={formik.values.seats} />
                   {formik.touched.seats && formik.errors.seats ? <div className='form-error'>{formik.errors.seats}</div> : null}
                 </div>
-              
+
                 <div className="mb-3">
                   <label htmlFor="pricePerHour" className="form-label">Price per hour</label>
                   <input type="number" step="0.01" name="pricePerHour" id="pricePerHour" className="form-control" onChange={formik.handleChange} onBlur={formik.handleBlur} value={formik.values.pricePerHour} />
@@ -190,7 +221,7 @@ export default function Admin() {
                   <input type="file" name="image" id="image" className="form-control" onChange={(e) => formik.setFieldValue("image", e.currentTarget.files[0])} onBlur={formik.handleBlur} />
                   {formik.touched.image && formik.errors.image ? <div className='form-error'>{formik.errors.image}</div> : null}
                 </div>
-              
+
                 <div className='mb-3 text-center'>
                   <button className='btn btn-primary' type='submit'>Add</button>
                 </div>
@@ -198,6 +229,32 @@ export default function Admin() {
             </Modal.Body>
             <Modal.Footer>
               <Button variant="secondary" onClick={handleClose}>
+                Close
+              </Button>
+
+            </Modal.Footer>
+          </Modal>
+        )
+      }
+
+      {
+        deletePopup && (
+          <Modal centered show={deletePopup}>
+            <Modal.Header>
+              <Modal.Title>Delete Product</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <p>are you sure you want to delete?</p>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button variant="danger" onClick={() => handleDeleteSuccess(productId)}>
+                Yes
+              </Button>
+              <Button variant="primary" onClick={handleDeleteClose}>
+                No
+              </Button>
+
+              <Button variant="secondary" onClick={handleDeleteClose}>
                 Close
               </Button>
 

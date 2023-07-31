@@ -1,16 +1,14 @@
 import React, { useState } from 'react';
-import Login from './Login';
-import Signup from './Signup';
+import "../styles/home.css";
+import { useFormik } from 'formik';
+import { useNavigate } from 'react-router-dom';
+import Dates from './Dates';
 
 export default function Home() {
-    const [isLoggedIn, setIsLoggedIn] = useState(true);
 
   return (
     <div className='homeWrapper'>
-    {/* {
-        isLoggedIn ? <Login/> : <Signup/>
-    } */}
-    
+      <Dates />
     </div>
   )
 }

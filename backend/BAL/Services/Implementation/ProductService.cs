@@ -5,6 +5,7 @@ using Shared.DTO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.ConstrainedExecution;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -14,11 +15,13 @@ namespace BAL.Services.Implementation
     {
         private readonly IGenericRepository<Car> _carRepository = null;
         private readonly IGenericRepository<Brand> _brandRepository = null;
+        private readonly IGenericRepository<BookedCar> _bookCarRepository = null;
 
-        public ProductService(IGenericRepository<Car> carRepository, IGenericRepository<Brand> brandRepository)
+        public ProductService(IGenericRepository<Car> carRepository, IGenericRepository<Brand> brandRepository, IGenericRepository<BookedCar> bookCarRepository)
         {
             _carRepository = carRepository;
             _brandRepository = brandRepository;
+            _bookCarRepository = bookCarRepository;
 
         }
         public async Task<Brand> AddBrand(BrandRequestModel model)
@@ -35,21 +38,22 @@ namespace BAL.Services.Implementation
             }
             catch (Exception ex) { throw ex; }
         }
-        public async Task<ProductRequestModel> GetCarById(Guid id)
+        public async Task<ProductResponseModel> GetCarById(Guid id)
         {
-            //repo
             try
             {
                 var res = await _carRepository.GetById(id);
-
+                var brandName = _brandRepository.GetAll().FirstOrDefault(x => x.Id == res.BrandId).Name;
                 if (res != null)
                 {
-                    var product = new ProductRequestModel()
+                    var product = new ProductResponseModel()
                     {
-                        //CarModel = res.Model, 
-                        //Brand = res.Brand,
-                        //PricePerHour = res.PricePerHour,
-                        //ImagePath = res.ImageUrl
+                         CarModel = res.Model, 
+                         Brand = brandName, 
+                         PricePerHour = res.PricePerHour,
+                         Image = res.ImageUrl,
+                         Seats = res.Seats,
+                         ProductId = id
                     };
                     return product;
                 } 
@@ -112,7 +116,8 @@ namespace BAL.Services.Implementation
                         Brand = brandName,
                         PricePerHour = car.PricePerHour,
                         Image = car.ImageUrl,
-                        Seats = car.Seats
+                        Seats = car.Seats,
+                        ProductId = car.Id
                     };
 
                     productList.Add(productListObj);
@@ -185,6 +190,131 @@ namespace BAL.Services.Implementation
                 throw ex;
             }
         }
-        
+        public async Task<BookedCar> BookingCar(BookingCarRequestModel model, string userId)
+        {
+            try
+            {
+                var allBookedCars = _bookCarRepository.GetAll().ToList();
+                bool flag = true;
+                if (allBookedCars.Count > 0)
+                {
+                    var isExists = allBookedCars.FirstOrDefault(x => x.CarId == model.ProductId);
+                    
+                    if (isExists != null)
+                    {
+                        //check the start and end datetime
+                        
+                        if((model.StartDate >= isExists.From && model.StartDate <= isExists.To) || (model.EndDate <= isExists.To && model.EndDate>=isExists.From))
+                        {
+                            flag = false;
+                        }
+                        else
+                        {
+                            flag = true;
+                        }
+                    }
+                }  
+               
+                if(flag)
+                {
+                    var obj = new BookedCar()
+                    {
+                        Id = Guid.NewGuid(),
+                        CarId = model.ProductId,
+                        From = model.StartDate,
+                        To = model.EndDate,
+                        TotalRent = model.TotalPrice,
+                        UserId = userId
+                    };
+                    await _bookCarRepository.AddAsync(obj);
+                    return obj;
+                }
+                throw new Exception("Already booked Please Choose different time slot");
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public async Task<IEnumerable<ProductResponseModel>> FindAvailability(FindCarModel model)
+        {
+            try
+            {
+                HashSet<Guid> addedCarIds = new HashSet<Guid>();
+                List<ProductResponseModel> products = new List<ProductResponseModel>();
+                var allCars = _carRepository.GetAll().ToList();
+                var allBookedCars = _bookCarRepository.GetAll().ToList();
+
+                foreach (var car in allCars)
+                {
+                    bool isAvailable = IsCarAvailableForDates(car, model.StartDate, model.EndDate, allBookedCars);
+                    if (isAvailable) 
+                    {
+                        var brandName = _brandRepository.GetAll().FirstOrDefault(x => x.Id == car.BrandId).Name;
+
+                        var product = new ProductResponseModel()
+                        {
+                            CarModel = car.Model,
+                            Brand = brandName,
+                            PricePerHour = car.PricePerHour,
+                            Image = car.ImageUrl,
+                            Seats = car.Seats,
+                            ProductId = car.Id
+                        };
+                        if (!addedCarIds.Contains(car.Id))
+                        {
+                            products.Add(product);
+                            addedCarIds.Add(car.Id);
+                        }
+                    }
+                }
+
+                return products;
+            }
+            catch (Exception ex) { throw ex; }
+        }
+        private bool IsCarAvailableForDates(Car car, DateTime startDate, DateTime endDate, List<BookedCar> allBookedCars)
+        {
+            foreach (var bookedCar in allBookedCars.Where(b => b.CarId == car.Id))
+            {
+                if (startDate <= bookedCar.To && endDate >= bookedCar.From)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+        public async Task<IEnumerable<BookingsResponseModel>> GetAllBookingsOfAUser(string userId)
+        {
+            try
+            {
+                List<BookingsResponseModel> allBookings = new List<BookingsResponseModel>();
+                var bookings = _bookCarRepository.GetAll().Where(x => x.UserId == userId).ToList(); 
+                foreach (var b in bookings)
+                {
+                    var carDetails = _carRepository.GetAll().FirstOrDefault(x => x.Id == b.CarId);
+                   
+                    var brandName = _brandRepository.GetAll().FirstOrDefault(x => x.Id == carDetails.BrandId).Name;
+
+                    var booking = new BookingsResponseModel()
+                    {
+                        CarModel = carDetails.Model,
+                        Brand = brandName,
+                        PricePerHour = carDetails.PricePerHour,
+                        TotalPrice = b.TotalRent,
+                        StartDate = b.From,
+                        EndDate = b.To,
+                        Image = carDetails.ImageUrl
+                    };
+                    allBookings.Add(booking);
+                }
+                return allBookings;
+            }
+            catch(Exception ex)
+            {
+                throw ex;
+            }
+        }
+
     }
 }
