@@ -1,12 +1,17 @@
-import React, { forwardRef } from 'react';
+import React, {useContext} from 'react';
 import "../styles/login.css";
 import { Link, useNavigate } from 'react-router-dom';
 import { useFormik } from 'formik';
 import axios from 'axios';
 import jwt from "jwt-decode";
+import { NavbarContext } from '../MyContext';
 
 export default function Login() {
     const navigate = useNavigate();
+    const {user} = useContext(NavbarContext);
+    const [userValue, setUserValue] = user;
+   // const {t, setT} = useContext(NavbarContext);
+
     const validate = values => {
         let errors = {}
         if (!values.password) {
@@ -32,11 +37,26 @@ export default function Login() {
                 .then((response) => {
 
                     const claims = jwt(response.data.token);
+                    const token = response.data.token;
+                //    setT(response.data.token);
 
                     localStorage.setItem('token', JSON.stringify(response.data.token));
 
                     const role = claims["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
 
+                        if (token) {
+                           axios
+                             .get("https://localhost:7104/api/Account/profile", {
+                               headers: {
+                                 "Authorization": `Bearer ${token}`
+                               }
+                             })
+                             .then((response) => {
+                               setUserValue(response.data);
+                             }).catch((error) => {
+                               console.log(error);
+                             })
+                         }
 
                     if (role == "Admin") {
                         navigate("/admin")

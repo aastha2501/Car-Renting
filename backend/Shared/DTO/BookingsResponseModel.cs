@@ -8,12 +8,10 @@ namespace Shared.DTO
 {
     public class BookingsResponseModel
     {
-        public string CarModel { get; set; }
-        public string Brand { get; set; }
-        public decimal PricePerHour { get; set; }
-        public decimal TotalPrice { get; set; }
-        public DateTime StartDate { get; set; }
+        public string UserId { get; set; }
+        public Guid CarId { get; set; }
+        public DateTime StartDate { get; set; } 
         public DateTime EndDate { get; set; }   
-        public string Image { get; set; }
+
     }
 }

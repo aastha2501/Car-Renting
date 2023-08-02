@@ -5,24 +5,28 @@ import Modal from 'react-bootstrap/Modal';
 import { useFormik } from "formik";
 import "../../styles/user.css";
 import Spinner from 'react-bootstrap/Spinner';
-import Home from '../Home';
-import Dates from '../Dates';
+import Dates from '../DatePicker';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
+import { useNavigate } from 'react-router-dom';
 
 export default function Dashboard() {
 
+  const navigate = useNavigate();
   const [data, setData] = useState();
   const [show, setShow] = useState(false);
   const [productId, setProductId] = useState();
   const [carData, setCarData] = useState();
   const [loading, setLoading] = useState(false);
 
-  var token = JSON.parse(localStorage.getItem("token"))
   const d = JSON.parse(localStorage.getItem("dates"));
+  const [date, setDate] = useState({
+    startDate: d.startDate,
+    endDate: d.endDate
+  });
 
-
+  var token = JSON.parse(localStorage.getItem("token"))
+  
   const calculateHoursDiff = () => {
     const { startDate, endDate } = formik.values;
     if (!startDate || !endDate) return;
@@ -32,31 +36,23 @@ export default function Dashboard() {
     const timeDifference = endDateTime - startDateTime;
 
     const hoursDifference = timeDifference / (1000 * 60 * 60);
-    // setTotalPrice(hoursDifference);
+    
     return hoursDifference;
   }
 
-
-
-  // console.log(d);
   useEffect(() => {
-
     setLoading(true);
     axios
-      .post("https://localhost:7104/api/User/findCars", d, {
-        headers: {
-          "Authorization": `Bearer ${token}`
-        }
-      })
+      .post("https://localhost:7104/api/User/findCars", date)
       .then((response) => {
-        // console.log(response.data);
+        console.log(response.data);
         setData(response.data);
         setLoading(false);
       }).catch((error) => {
         console.log(error);
         setLoading(false);
       })
-  }, []);
+  }, [date]);
 
   // book now
   const formik = useFormik({
@@ -65,16 +61,9 @@ export default function Dashboard() {
       endDate: ''
     },
     onSubmit: (values, { resetForm }) => {
-
-      // resetForm();
-
-      // console.log(productId);
       const price = carData.pricePerHour;
-      // console.log(price);
       const hours = calculateHoursDiff();
-      // console.log(hours);
       const total = price * hours;
-      // console.log(total);
 
       var data = {
         ProductId: productId,
@@ -83,6 +72,8 @@ export default function Dashboard() {
         TotalPrice: total
       }
       console.log(data);
+
+
 
       axios
         .post("https://localhost:7104/api/User/bookCar", data, {
@@ -96,11 +87,9 @@ export default function Dashboard() {
         }).catch((error) => {
           console.log(error);
         })
-      // https://localhost:7104/api/User/bookCar
-
     },
-
   })
+
   useEffect(() => {
     const storedData = localStorage.getItem('dates');
     if (storedData) {
@@ -114,36 +103,31 @@ export default function Dashboard() {
   }
 
   const handleRentClick = (productId) => {
-    // console.log(productId);
-    setProductId(productId);
+    if(token) {
+      setProductId(productId);
 
-
-
-    axios.get("https://localhost:7104/api/User/getCar/" + productId, {
-      headers: {
-        "Authorization": `Bearer ${token}`
-      }
-    }).then((response) => {
-      console.log(response.data);
-      setCarData(response.data);
-
-      setShow(true);
-    }).catch((error) => {
-      console.log(error);
-    })
-
+      axios.get("https://localhost:7104/api/User/getCar/" + productId, {
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
+      }).then((response) => {
+        console.log(response.data);
+        setCarData(response.data);
+  
+        setShow(true);
+      }).catch((error) => {
+        console.log(error);
+      })
+    } else {
+      navigate("/login");
+    }
   }
 
-
-  //   var price = calculateHoursDiff()*carData.pricePerHour;
-  // console.log(price);
   return (
     <>
-
       {
-        loading ? <div className='homeWrapper'><Spinner animation="grow" variant="secondary" /></div>
+        loading ? <Spinner animation="grow" variant="secondary" />
           : (<div className='user-home-wrapper container'>
-
             <ToastContainer
               position="bottom-center"
               autoClose={5000}
@@ -157,7 +141,13 @@ export default function Dashboard() {
               theme="dark"
             />
             <div className='pickup-date mt-4'>
-              <Dates />
+              <Dates 
+                setCallBack={(values)=>{
+            setDate(values);
+                  
+                }}
+              />
+            
             </div>
             <div className='row mt-4'>
               {
@@ -176,8 +166,6 @@ export default function Dashboard() {
                 })
               }
             </div>
-
-
             <div>
               {
                 show && (
@@ -208,7 +196,6 @@ export default function Dashboard() {
                         </div>
                         <div className="mb-5">
                           <label htmlFor="endDate">To:</label>
-
                           <input type="datetime-local" id="endDate"
                             name="endDate"
                             min="2018-06-07T00:00" max="2024-06-14T00:00" className='form-control' onChange={formik.handleChange} onBlur={formik.handleBlur} value={formik.values.endDate} readOnly />
@@ -216,7 +203,6 @@ export default function Dashboard() {
 
                         <div className="mb-3">
                           <label htmlFor="total-rent">Total Rent: </label>
-
                           {
                             formik.values.startDate && formik.values.endDate && (
                               <span className='rent'> &#x20b9;
@@ -224,8 +210,6 @@ export default function Dashboard() {
                               </span>
                             )
                           }
-
-
                         </div>
                         <div className='mb-3 text-center'>
                           <button className='btn bookBtn' type='submit'>Book Now</button>
@@ -247,4 +231,5 @@ export default function Dashboard() {
     </>
   )
 }
+
 

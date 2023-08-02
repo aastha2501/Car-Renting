@@ -79,7 +79,7 @@ namespace backend.Controllers
                 var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
 
                 var token = new JwtSecurityToken(
-                    expires: DateTime.Now.AddMinutes(50),
+                    expires: DateTime.Now.AddHours(3),
                     claims: claims,
                     signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256Signature)
                 );

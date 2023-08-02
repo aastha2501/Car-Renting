@@ -1,4 +1,5 @@
-﻿using DAL.Model;
+﻿using AutoMapper;
+using DAL.Model;
 using DAL.Repository;
 using Microsoft.AspNetCore.Identity;
 using Shared.DTO;
@@ -16,12 +17,14 @@ namespace BAL.Services.Implementation
         private readonly IGenericRepository<Car> _carRepository = null;
         private readonly IGenericRepository<Brand> _brandRepository = null;
         private readonly IGenericRepository<BookedCar> _bookCarRepository = null;
+        private readonly IMapper _mapper;
 
-        public ProductService(IGenericRepository<Car> carRepository, IGenericRepository<Brand> brandRepository, IGenericRepository<BookedCar> bookCarRepository)
+        public ProductService(IGenericRepository<Car> carRepository, IGenericRepository<Brand> brandRepository, IGenericRepository<BookedCar> bookCarRepository, IMapper mapper)
         {
             _carRepository = carRepository;
             _brandRepository = brandRepository;
             _bookCarRepository = bookCarRepository;
+            _mapper = mapper;
 
         }
         public async Task<Brand> AddBrand(BrandRequestModel model)
@@ -33,6 +36,7 @@ namespace BAL.Services.Implementation
                     Id = Guid.NewGuid(),
                     Name = model.Name
                 };
+                // var brand = _mapper.Map<Brand>(model);
                 await _brandRepository.AddAsync(brand);
                 return brand;
             }
@@ -82,6 +86,7 @@ namespace BAL.Services.Implementation
                     BrandId = model.BrandId,
                     Seats = model.Seats
                 };
+                //var product = _mapper.Map<Car>(model);
                 await _carRepository.AddAsync(product);
                 return product;
             }
@@ -284,11 +289,11 @@ namespace BAL.Services.Implementation
             }
             return true;
         }
-        public async Task<IEnumerable<BookingsResponseModel>> GetAllBookingsOfAUser(string userId)
+        public async Task<IEnumerable<UserBookingsResponseModel>> GetAllBookingsOfAUser(string userId)
         {
             try
             {
-                List<BookingsResponseModel> allBookings = new List<BookingsResponseModel>();
+                List<UserBookingsResponseModel> allBookings = new List<UserBookingsResponseModel>();
                 var bookings = _bookCarRepository.GetAll().Where(x => x.UserId == userId).ToList(); 
                 foreach (var b in bookings)
                 {
@@ -296,7 +301,7 @@ namespace BAL.Services.Implementation
                    
                     var brandName = _brandRepository.GetAll().FirstOrDefault(x => x.Id == carDetails.BrandId).Name;
 
-                    var booking = new BookingsResponseModel()
+                    var booking = new UserBookingsResponseModel()
                     {
                         CarModel = carDetails.Model,
                         Brand = brandName,
@@ -315,6 +320,10 @@ namespace BAL.Services.Implementation
                 throw ex;
             }
         }
+        //public async Task GetAllBookings()
+        //{
 
+        //}
+        
     }
 }

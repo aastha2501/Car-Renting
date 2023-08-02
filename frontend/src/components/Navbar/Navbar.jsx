@@ -13,10 +13,12 @@ export default function Navbar() {
   const [image, setImage] = useState();
 
   const { user } = useContext(NavbarContext);
-
+  const [userValue] = user;
+//  console.log(user);
   const navigate = useNavigate();
   var t = JSON.parse(localStorage.getItem("token"))
   useEffect(() => {
+    // debugger;
     if (t) {
       // axios
       //   .get("https://localhost:7104/api/User/profile", {
@@ -95,14 +97,14 @@ export default function Navbar() {
         {
           token ? <div className="navBtn">
             {
-              role === "User" && user?.image !== null ? (
+              role === "User" && userValue?.image !== null ? (
                 <Link to={`/profile/${userId}`}>
-                  <img src={user?.image} className='navbarProfile' alt="User profile" /> <span className='username'>{user?.firstName}</span>
+                  <img src={userValue?.image} className='navbarProfile' alt="User profile" /> <span className='username'>{userValue?.firstName}</span>
                 </Link>
 
               ) : (
-                role === "User" && image === null ? (
-                  <Link to={`/profile/${userId}`}><i className="fa-solid fa-user"></i>  <span className='username'>{user?.firstName}</span></Link>
+                role === "User" && userValue?.image === null ? (
+                  <Link to={`/profile/${userId}`}><i className="fa-solid fa-user"></i>  <span className='username'>{userValue?.firstName}</span></Link>
                 ) : (
                   <Link className='username'><i className="fa-solid fa-user"></i> Admin</Link>
                 )

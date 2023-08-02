@@ -20,6 +20,7 @@ namespace BAL.Services
         Task<IEnumerable<Car>> SearchByBrand(Guid id);
         Task<BookedCar> BookingCar(BookingCarRequestModel model, string userId);
         Task<IEnumerable<ProductResponseModel>> FindAvailability(FindCarModel model);
-        Task<IEnumerable<BookingsResponseModel>> GetAllBookingsOfAUser(string userId);
+        Task<IEnumerable<UserBookingsResponseModel>> GetAllBookingsOfAUser(string userId);
+        
     }
 }

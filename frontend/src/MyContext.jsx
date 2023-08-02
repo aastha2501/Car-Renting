@@ -10,8 +10,7 @@ const NavbarContextProvider = ({ children }) => {
   const [user, setUser] = useState();
 
   useEffect(() => {
-
-    if (token) {
+   if (token) {
       axios
         .get("https://localhost:7104/api/Account/profile", {
           headers: {
@@ -26,7 +25,7 @@ const NavbarContextProvider = ({ children }) => {
     }
   }, [])
 
-  return <NavbarContext.Provider value={{ user, setUser }}>
+  return <NavbarContext.Provider value={{ user: [user, setUser]}}>
     {children}
   </NavbarContext.Provider>
 }

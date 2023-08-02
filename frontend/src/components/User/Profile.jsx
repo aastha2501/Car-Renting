@@ -8,7 +8,9 @@ import 'react-toastify/dist/ReactToastify.css';
 import { NavbarContext } from '../../MyContext';
 
 export default function Profile() {
-  const { user, setUser } = useContext(NavbarContext);
+  const { user} = useContext(NavbarContext);
+  const [userValue, setUserValue] = user;
+
   const inputRef = useRef(null);
   const [image, setImage] = useState();
 
@@ -78,7 +80,7 @@ export default function Profile() {
       image: ''
     },
     onSubmit: values => {
-      debugger;
+      
       const formData = new FormData();
       formData.append('FirstName', values.firstName);
       formData.append('LastName', values.lastName);
@@ -98,7 +100,7 @@ export default function Profile() {
           setLastName(response.data.lastName);
           setEmail(response.data.email);
 
-          setUser(response.data);
+          setUserValue(response.data);
 
           toast.success("Profile updated successfully!!");
         }).catch((error) => {

@@ -10,7 +10,7 @@ namespace backend.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = "User, Admin")]
+   
     public class UserController : ControllerBase
     {
         private readonly IProductService _productService;
@@ -46,8 +46,6 @@ namespace backend.Controllers
             }
         }
 
-        
-       
         [HttpGet("getCar/{id:guid}")]
         public async Task<IActionResult> GetCarById(Guid id)
         {
@@ -94,7 +92,7 @@ namespace backend.Controllers
                 response.ErrorMessage = ex.Message;
                 return BadRequest(response);
             }
-            }
+        }
 
         [HttpGet("searchCarByBrand/{id:guid}")]
         public async Task<IActionResult> SearchByBrand(Guid id)
@@ -122,7 +120,7 @@ namespace backend.Controllers
             {
                 var res = await _productService.BookingCar(model, userId);
                 response.Data = res;
-                return Ok(response.Data);
+                return Ok(response.Data);   
             }
             catch (Exception ex)
             {
@@ -196,7 +194,5 @@ namespace backend.Controllers
             }
         }
 
-         
-       
     }
 }
