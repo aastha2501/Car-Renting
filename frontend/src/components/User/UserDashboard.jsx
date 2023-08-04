@@ -19,14 +19,20 @@ export default function Dashboard() {
   const [carData, setCarData] = useState();
   const [loading, setLoading] = useState(false);
 
+
   const d = JSON.parse(localStorage.getItem("dates"));
   const [date, setDate] = useState({
-    startDate: d.startDate,
-    endDate: d.endDate
+    startDate: '',
+    endDate: ''
   });
+  if (d != null) {
+    date.startDate = d.startDate;
+    date.endDate = d.endDate;
+  } 
+
 
   var token = JSON.parse(localStorage.getItem("token"))
-  
+
   const calculateHoursDiff = () => {
     const { startDate, endDate } = formik.values;
     if (!startDate || !endDate) return;
@@ -36,12 +42,15 @@ export default function Dashboard() {
     const timeDifference = endDateTime - startDateTime;
 
     const hoursDifference = timeDifference / (1000 * 60 * 60);
-    
+
     return hoursDifference;
   }
 
   useEffect(() => {
     setLoading(true);
+    if(d == null) {
+      navigate("/");
+    }
     axios
       .post("https://localhost:7104/api/User/findCars", date)
       .then((response) => {
@@ -60,6 +69,7 @@ export default function Dashboard() {
       startDate: '',
       endDate: ''
     },
+
     onSubmit: (values, { resetForm }) => {
       const price = carData.pricePerHour;
       const hours = calculateHoursDiff();
@@ -103,7 +113,7 @@ export default function Dashboard() {
   }
 
   const handleRentClick = (productId) => {
-    if(token) {
+    if (token) {
       setProductId(productId);
 
       axios.get("https://localhost:7104/api/User/getCar/" + productId, {
@@ -113,7 +123,7 @@ export default function Dashboard() {
       }).then((response) => {
         console.log(response.data);
         setCarData(response.data);
-  
+
         setShow(true);
       }).catch((error) => {
         console.log(error);
@@ -141,13 +151,12 @@ export default function Dashboard() {
               theme="dark"
             />
             <div className='pickup-date mt-4'>
-              <Dates 
-                setCallBack={(values)=>{
-            setDate(values);
-                  
+              <Dates
+                setCallBack={(values) => {
+                  setDate(values);
                 }}
               />
-            
+
             </div>
             <div className='row mt-4'>
               {

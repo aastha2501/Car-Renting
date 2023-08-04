@@ -179,6 +179,28 @@ namespace backend.Controllers
             }
         }
 
+        [HttpGet("allbookings")]
+        public async Task<IActionResult> GetAllBookings()
+        {
+            var response = new ApiResponse();
+            try
+            {
+                var res = await _productService.GetAllBookings();
+                if (res != null)
+                {
+                    response.Success = true;
+                    response.Data = res;
+                    return Ok(response.Data);
+                }
+                throw new Exception("unable to get all bookings");
+            }
+            catch (Exception ex)
+            {
+                response.Success = false;
+                response.ErrorMessage = ex.Message;
+                return BadRequest(response);
+            }
+        }
 
     }
 }

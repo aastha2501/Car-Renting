@@ -1,4 +1,9 @@
 .loginWrapper {
+    position: absolute;
+    bottom: 0;
+    top: 10px;
+    left: 0;
+    right: 0;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -7,4 +12,6 @@
     width: 460px;
     background-color: rgba(224, 224, 224, 0.6);
     padding: 1.5rem 2rem;
+    
+
 }

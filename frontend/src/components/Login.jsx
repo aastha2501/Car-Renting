@@ -1,4 +1,4 @@
-import React, {useContext} from 'react';
+import React, {useContext, useState} from 'react';
 import "../styles/login.css";
 import { Link, useNavigate } from 'react-router-dom';
 import { useFormik } from 'formik';
@@ -10,7 +10,7 @@ export default function Login() {
     const navigate = useNavigate();
     const {user} = useContext(NavbarContext);
     const [userValue, setUserValue] = user;
-   // const {t, setT} = useContext(NavbarContext);
+    const [error, setError] = useState();
 
     const validate = values => {
         let errors = {}
@@ -72,7 +72,8 @@ export default function Login() {
 
 
                 }).catch((error) => {
-                    console.log(error);
+                    console.log(error.response.data.errorMessage);
+                    setError(error.response.data.errorMessage);
                 })
         },
         validate
@@ -83,16 +84,18 @@ export default function Login() {
             <div className='homeWrapper'>
                 <div className='loginWrapper'>
                     <form className='form' onSubmit={formik.handleSubmit}>
+                     
                         <h4 className='textAlign'>Login</h4>
+                        {error && <div className='error text-center'><b>{error}</b></div>}
                         <div className="mb-3">
                             <label htmlFor="email" className="form-label">Email</label>
                             <input type="email" name="email" id="email" className="form-control" onChange={formik.handleChange} onBlur={formik.handleBlur} value={formik.values.email} />
-                            {formik.touched.email && formik.errors.email ? <div className='form-error'>{formik.errors.email}</div> : null}
+                            {formik.touched.email && formik.errors.email ? <div className='form-error error'><i class="fa fa-triangle-exclamation"></i> {formik.errors.email}</div> : null}
                         </div>
                         <div className="mb-3">
                             <label htmlFor="password" className="form-label">Password</label>
                             <input type="password" name="password" id="password" className="form-control" onChange={formik.handleChange} onBlur={formik.handleBlur} value={formik.values.password} />
-                            {formik.touched.password && formik.errors.password ? <div className='form-error'>{formik.errors.password}</div> : null}
+                            {formik.touched.password && formik.errors.password ? <div className='form-error error'><i class="fa fa-triangle-exclamation"></i> {formik.errors.password}</div> : null}
                         </div>
                         <div className="mb-3 text-center">
                             <button type="submit" className="btnDarkColor">Login</button>

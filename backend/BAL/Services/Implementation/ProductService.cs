@@ -18,14 +18,14 @@ namespace BAL.Services.Implementation
         private readonly IGenericRepository<Brand> _brandRepository = null;
         private readonly IGenericRepository<BookedCar> _bookCarRepository = null;
         private readonly IMapper _mapper;
-
-        public ProductService(IGenericRepository<Car> carRepository, IGenericRepository<Brand> brandRepository, IGenericRepository<BookedCar> bookCarRepository, IMapper mapper)
+        private readonly UserManager<User> _userManager;
+        public ProductService(IGenericRepository<Car> carRepository, IGenericRepository<Brand> brandRepository, IGenericRepository<BookedCar> bookCarRepository, IMapper mapper, UserManager<User> userManager)
         {
             _carRepository = carRepository;
             _brandRepository = brandRepository;
             _bookCarRepository = bookCarRepository;
             _mapper = mapper;
-
+            _userManager = userManager;
         }
         public async Task<Brand> AddBrand(BrandRequestModel model)
         {
@@ -300,16 +300,20 @@ namespace BAL.Services.Implementation
                     var carDetails = _carRepository.GetAll().FirstOrDefault(x => x.Id == b.CarId);
                    
                     var brandName = _brandRepository.GetAll().FirstOrDefault(x => x.Id == carDetails.BrandId).Name;
+                    bool check = b.To < DateTime.Now;
 
                     var booking = new UserBookingsResponseModel()
                     {
+                        Id = b.Id,
                         CarModel = carDetails.Model,
                         Brand = brandName,
                         PricePerHour = carDetails.PricePerHour,
                         TotalPrice = b.TotalRent,
                         StartDate = b.From,
                         EndDate = b.To,
-                        Image = carDetails.ImageUrl
+                        IsCancelled = check,
+                        Image = carDetails.ImageUrl,
+                        
                     };
                     allBookings.Add(booking);
                 }
@@ -320,10 +324,53 @@ namespace BAL.Services.Implementation
                 throw ex;
             }
         }
-        //public async Task GetAllBookings()
-        //{
-
-        //}
+        public async Task<IEnumerable<BookingsResponseModel>> GetAllBookings()
+        {
         
+            try
+            {
+                List<BookingsResponseModel> allBookings = new List<BookingsResponseModel>();
+                var bookings = _bookCarRepository.GetAll().ToList();
+                foreach (var b in bookings)
+                {
+                    var user = await _userManager.FindByIdAsync(b.UserId);
+                    var carDetails = _carRepository.GetAll().FirstOrDefault(x => x.Id == b.CarId);
+                    var brandName = _brandRepository.GetAll().FirstOrDefault(x => x.Id == carDetails.BrandId).Name;
+
+                    var booking = new BookingsResponseModel()
+                    {
+                        UserName = user.FirstName,
+                        Model = carDetails.Model,
+                        Brand = brandName,
+                        StartDate = b.From,
+                        EndDate = b.To,
+                        TotalRent = b.TotalRent
+                    };
+                    allBookings.Add(booking);
+                }
+                return allBookings;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public async Task<Guid> CancelBooking(Guid id)
+        {
+            try
+            {
+                var booking = _bookCarRepository.GetAll().FirstOrDefault(x => x.Id == id);
+                if (booking != null)
+                {
+                    await _bookCarRepository.DeleteAsync(booking);
+                    return id;
+                }
+                throw new Exception("No product found with this Id");
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
     }
 }

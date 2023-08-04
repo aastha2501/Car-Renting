@@ -34,22 +34,23 @@ namespace backend.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginModel model)
         {
-            var user = await _userManager.FindByEmailAsync(model.Email);
-            if(user == null) {
-                var response =  new ResponseModel()
-                {
-                    ErrorMessage = "User not exists!!"
-                };
-                return Unauthorized(response.ErrorMessage);
-            }
-            else
+            var response = new ApiResponse();
+            try
             {
-                //check password
-                var pwdMatch = await _userManager.CheckPasswordAsync(user, model.Password);
-                if(pwdMatch)
+                var user = await _userManager.FindByEmailAsync(model.Email);
+                if (user == null)
                 {
-                    var userRoles = await _userManager.GetRolesAsync(user);
-                    var authClaims = new List<Claim>()
+                    response.ErrorMessage = "User not exists";
+                    return BadRequest(response);
+                }
+                else
+                {
+                    //check password
+                    var pwdMatch = await _userManager.CheckPasswordAsync(user, model.Password);
+                    if (pwdMatch)
+                    {
+                        var userRoles = await _userManager.GetRolesAsync(user);
+                        var authClaims = new List<Claim>()
                     {
                         new Claim(ClaimTypes.Name, user.Id),
                         new Claim(ClaimTypes.NameIdentifier, user.FirstName.ToString()),
@@ -57,38 +58,44 @@ namespace backend.Controllers
                         new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
                     };
 
-                    foreach(var role in userRoles)
-                    {
-                        authClaims.Add(new Claim(ClaimTypes.Role, role));
+                        foreach (var role in userRoles)
+                        {
+                            authClaims.Add(new Claim(ClaimTypes.Role, role));
+                        }
+
+                        var token = GenerateJwtToken(authClaims);
+                        return Ok(new { Token = token });
                     }
 
-                    var token = GenerateJwtToken(authClaims);
-                    return Ok(new { Token = token });
-                } 
-               
-                var response = new ResponseModel()
+                    response.ErrorMessage = "Invalid Credentials";
+
+                    return BadRequest(response);
+                }
+
+                string GenerateJwtToken(IEnumerable<Claim> claims)
                 {
-                    ErrorMessage = "Invalid Credentials"
-                };
+                    var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
 
-                return BadRequest(new { response.ErrorMessage });
+                    var token = new JwtSecurityToken(
+                        expires: DateTime.Now.AddHours(3),
+                        claims: claims,
+                        signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256Signature)
+                    );
+
+                    var tokenHandler = new JwtSecurityTokenHandler();
+                    string tokenString = tokenHandler.WriteToken(token);
+                    return tokenString;
+                }
+
             }
-
-            string GenerateJwtToken(IEnumerable<Claim> claims)
+            catch (Exception ex)
             {
-                var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
-
-                var token = new JwtSecurityToken(
-                    expires: DateTime.Now.AddHours(3),
-                    claims: claims,
-                    signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256Signature)
-                );
-
-                var tokenHandler = new JwtSecurityTokenHandler();
-                string tokenString = tokenHandler.WriteToken(token);
-                return tokenString;
+                response.Success = false;
+                response.ErrorMessage = ex.Message;
+                return BadRequest(response);
             }
-
+          
+         
         }
 
         [HttpPost("signup")]

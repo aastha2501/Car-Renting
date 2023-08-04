@@ -56,13 +56,13 @@ export default function Signup() {
             <div className="loginWrapper">
                 <form onSubmit={formik.handleSubmit} className="form" >
                     <h4>Signup</h4>
-                    {errorMsg && <p style={{ color: "red" }}>{errorMsg}</p>}
+                    {errorMsg && <p className="error"><i class="fa fa-triangle-exclamation"></i>{errorMsg}</p>}
 
                     <div className="row">
                         <div className='col-6'>
                             <label htmlFor="firstName" className="form-label">First name</label>
                             <input type="text" name="firstName" id="firstName" className="form-control" onChange={formik.handleChange} onBlur={formik.handleBlur} value={formik.values.firstName} />
-                            {formik.touched.firstName && formik.errors.firstName ? <div className='form-error'>{formik.errors.firstName}</div> : null}
+                            {formik.touched.firstName && formik.errors.firstName ? <div className='form-error error'><i class="fa fa-triangle-exclamation"></i>{formik.errors.firstName}</div> : null}
                         </div>
                         <div className="col-6">
                             <label htmlFor="lastName" className="form-label">Last name</label>
@@ -72,19 +72,19 @@ export default function Signup() {
                     <div className="mb-2">
                         <label htmlFor="email" className="form-label">Email</label>
                         <input type="email" name="email" id="email" className="form-control" onChange={formik.handleChange} onBlur={formik.handleBlur} value={formik.values.email} />
-                        {formik.touched.email && formik.errors.email ? <div className='form-error'>{formik.errors.email}</div> : null}
+                        {formik.touched.email && formik.errors.email ? <div className='form-error error'><i class="fa fa-triangle-exclamation"></i>{formik.errors.email}</div> : null}
 
                     </div>
                     <div className="mb-2">
                         <label htmlFor="password" className="form-label">Password</label>
                         <input type="password" name="password" id="password" className="form-control" onChange={formik.handleChange} onBlur={formik.handleBlur} value={formik.values.password} />
-                        {formik.touched.password && formik.errors.password ? <div className='form-error'>{formik.errors.password}</div> : null}
+                        {formik.touched.password && formik.errors.password ? <div className='form-error error'><i class="fa fa-triangle-exclamation"></i>{formik.errors.password}</div> : null}
 
                     </div>
                     <div className="mb-2">
                         <label htmlFor="confirmPassword" className="form-label">Confirm Password</label>
                         <input type="password" name="confirmPassword" id="confirmPassword" className="form-control" onChange={formik.handleChange} onBlur={formik.handleBlur} value={formik.values.confirmPassword} />
-                        {formik.touched.confirmPassword && formik.errors.confirmPassword ? <div className='form-error'>{formik.errors.confirmPassword}</div> : null}
+                        {formik.touched.confirmPassword && formik.errors.confirmPassword ? <div className='form-error error'><i class="fa fa-triangle-exclamation"></i>{formik.errors.confirmPassword}</div> : null}
 
                     </div>
                     <div className="mb-2">

@@ -18,23 +18,9 @@ export default function Navbar() {
   const navigate = useNavigate();
   var t = JSON.parse(localStorage.getItem("token"))
   useEffect(() => {
-    // debugger;
     if (t) {
-      // axios
-      //   .get("https://localhost:7104/api/User/profile", {
-      //     headers: {
-      //       "Authorization": `Bearer ${t}`
-      //     }
-      //   })
-      //   .then((response) => {
-      //     console.log(response.data);
-      //     setImage(response.data.image);
-      //   }).catch((error) => { 
-      //     con sole.log(error);
-      //   })
-
+   
       setToken(t);
-
       const claims = jwt(t);
 
       const role = claims["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
@@ -61,7 +47,7 @@ export default function Navbar() {
       <div className="navbar">
         <div className="logo">
           <a href=""
-          ><h1>Logo<span>.</span></h1></a
+          ><h1>Car Renting<span>.</span></h1></a
           >
         </div>
         <div className="navItems">
@@ -80,9 +66,10 @@ export default function Navbar() {
 
             ) : (token && role == "Admin" ? (
               <ul className="sibling">
-                <li><Link to="/admin">Home</Link></li>
-                <li><a href="">Bookings</a></li>
-                <li><a href="">All Brands</a></li>
+                <Link className='link' to="/admin">Home</Link>
+                <Link className='link' to='/bookings'>Bookings</Link>
+                <Link className='link' to="/brands">Car Brands</Link>
+    
               </ul>
 
             ) : (

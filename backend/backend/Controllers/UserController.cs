@@ -165,6 +165,24 @@ namespace backend.Controllers
                 return BadRequest(response);
             }
         }
+
+        [HttpDelete("/CancelBooking/{id:guid}")]
+        public async Task<IActionResult> CancleBooking(Guid id)
+        {
+            var response = new ApiResponse();
+            try
+            {
+                var res = await _productService.CancelBooking(id);
+                response.Data = res;
+                return Ok(response.Data);
+            }
+            catch (Exception ex)
+            {
+                response.Success = false;
+                response.ErrorMessage = ex.Message;
+                return BadRequest(response);
+            }
+        }
         [NonAction]
         public Tuple<string, string> SaveImage(IFormFile imageFile)
         {

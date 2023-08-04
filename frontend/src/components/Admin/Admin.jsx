@@ -4,8 +4,7 @@ import { useFormik } from "formik";
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import axios from 'axios';
-import Form from 'react-bootstrap/Form';
-import Feedback from 'react-bootstrap/esm/Feedback';
+import { Formik, Form, Field } from 'formik';
 
 export default function Admin() {
 
@@ -14,6 +13,7 @@ export default function Admin() {
   const [brands, setBrands] = useState();
   const [productId, setProductId] = useState();
   const [deletePopup, setDeletePopup] = useState(false);
+  const [editBox, setEditBox] = useState(false);
 
   const token = JSON.parse(localStorage.getItem('token'));
 
@@ -36,7 +36,6 @@ export default function Admin() {
         "Authorization": `Bearer ${token}`
       }
     }).then((res) => {
-
       setBrands(res.data.result);
     }).catch((err) => {
       console.log(err);
@@ -104,6 +103,7 @@ export default function Admin() {
 
   const handleClose = () => {
     setShow(false);
+    setEditBox(false);
   }
 
   const handleDelete = (id) => {
@@ -121,7 +121,7 @@ export default function Admin() {
         }
       })
       .then((response) => {
-        console.log(response.data);
+
         setDeletePopup(false);
       }).catch((error) => {
         console.log(error);
@@ -129,22 +129,37 @@ export default function Admin() {
   }
 
   const EditProduct = (id) => {
+    console.log(id);
+    setEditBox(true);
 
+    axios
+      .get("https://localhost:7104/api/User/getCar/" + id, {
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
+      }).then((response) => {
+        console.log(response.data);
+      }).catch((error) => {
+        console.log(error);
+      })
   }
 
   const handleDeleteClose = () => {
     setDeletePopup(false);
   }
+
+  const handleEditSumbit = (values, { resetForm }) => {
+    console.log(values);
+  }
   return (
 
     <div>
 
-
       <div className="mt-3" style={{ textAlign: "center" }}>
-        <button className='btn addBtn' onClick={handleAdd}>Add</button>
+        <button className='btn addBtn' onClick={handleAdd}>Add </button>
       </div>
-      <div className="mt-3 table-resposive p-3">
-        <table className='table table-bordered table-hover'>
+      <div className="mt-3 table-resposive p-3" style={{ overflowX: "auto" }}>
+        <table className='table table-hover'>
           <thead className='table-dark'>
             <tr>
               <th scope="col">Image</th>
@@ -164,13 +179,17 @@ export default function Admin() {
                       <img src={item.image} style={{ height: "120px", width: "200px" }} alt="image" />
                     </td>
                     <td>{item.carModel}</td>
-
                     <td>{item.brand}</td>
                     <td>{item.seats}</td>
                     <td>{item.pricePerHour}/-</td>
                     <td>
-                      <button className='btn btn-danger' onClick={() => handleDelete(item.productId)}>Delete</button>
-                      {" "} <button className="btn btn-info" onClick={() => EditProduct(item.productId)}>Edit</button>
+                      
+                      {/* <button className="btn btn-info" onClick={() => EditProduct(item.productId)}>
+                      <i className="fa-solid fa-pen-to-square" style={{color: "white"}}></i>
+                      </button> */}
+                      {" "}<button className='btn btn-danger' onClick={() => handleDelete(item.productId)}>
+                      <i className="fa-solid fa-trash-can"></i>
+                      </button>
                     </td>
                   </tr>
                 })
@@ -180,6 +199,7 @@ export default function Admin() {
           </tbody>
         </table>
       </div>
+      {/* add product */}
       {
         show && (
           <Modal show={show} centered>
@@ -237,6 +257,68 @@ export default function Admin() {
         )
       }
 
+      {/* edit product */}
+      {
+        editBox && (
+          <Modal show={editBox} centered>
+            <Modal.Header>
+              <Modal.Title>Edit Product</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              
+              <Formik initialValues={{
+                pricePerHour: '',
+                image: ''
+              }} onSubmit={handleEditSumbit}>
+                {({ isSubmitting }) => (
+                  <Form>
+                    <div className="mb-3">
+                      <label htmlFor="pricePerHour" className="form-label">Price per hour</label>
+                      <input type="number" step="0.01" name="pricePerHour" id="pricePerHour" className="form-control" onChange={formik.handleChange} onBlur={formik.handleBlur} value={formik.values.pricePerHour} />
+                    </div>
+
+                    <div className="mb-3">
+                      <label htmlFor="image" className="form-label">Image</label>
+                      <input type="file" name="image" id="image" className="form-control" onChange={(e) => formik.setFieldValue("image", e.currentTarget.files[0])} onBlur={formik.handleBlur} />
+                    </div>
+                    <button type="submit" className='btn btn-dark' disabled={isSubmitting}>
+                      Edit
+                    </button>
+                   
+                  </Form>
+                )}
+              </Formik>
+
+              {/* <form onSubmit={formik.handleSubmit} encType="multipart/form-data">
+
+                <div className="mb-3">
+                  <label htmlFor="pricePerHour" className="form-label">Price per hour</label>
+                  <input type="number" step="0.01" name="pricePerHour" id="pricePerHour" className="form-control" onChange={formik.handleChange} onBlur={formik.handleBlur} value={formik.values.pricePerHour} />
+                  {formik.touched.pricePerHour && formik.errors.pricePerHour ? <div className='form-error'>{formik.errors.pricePerHour}</div> : null}
+                </div>
+
+                <div className="mb-3">
+                  <label htmlFor="image" className="form-label">Image</label>
+                  <input type="file" name="image" id="image" className="form-control" onChange={(e) => formik.setFieldValue("image", e.currentTarget.files[0])} onBlur={formik.handleBlur} />
+                  {formik.touched.image && formik.errors.image ? <div className='form-error'>{formik.errors.image}</div> : null}
+                </div>
+
+                <div className='mb-3 text-center'>
+                  <button className='btn btn-primary' type='submit'>Edit</button>
+                </div>
+              </form> */}
+            </Modal.Body>
+            <Modal.Footer>
+              <Button variant="secondary" onClick={handleClose}>
+                Close
+              </Button>
+
+            </Modal.Footer>
+          </Modal>
+        )
+      }
+
+      {/* delete product */}
       {
         deletePopup && (
           <Modal centered show={deletePopup}>
@@ -265,3 +347,54 @@ export default function Admin() {
     </div>
   )
 }
+
+
+
+
+
+// import React from 'react';
+// import { Formik, Form, Field } from 'formik';
+
+// const MyComponent = () => {
+//   const handleSubmitForm1 = (values, { resetForm }) => {
+//     // Handle submission of Form 1 here
+//     console.log('Form 1 submitted:', values);
+//     resetForm(); // Optionally reset the form after successful submission
+//   };
+
+//   const handleSubmitForm2 = (values, { resetForm }) => {
+//     // Handle submission of Form 2 here
+//     console.log('Form 2 submitted:', values);
+//     resetForm(); // Optionally reset the form after successful submission
+//   };
+
+//   return (
+//     <div>
+//       <h2>Form 1</h2>
+//       <Formik initialValues={{}} onSubmit={handleSubmitForm1}>
+//         {({ isSubmitting }) => (
+//           <Form>
+//             <Field type="text" name="field1" placeholder="Field 1" />
+//             <button type="submit" disabled={isSubmitting}>
+//               Submit Form 1
+//             </button>
+//           </Form>
+//         )}
+//       </Formik>
+
+//       <h2>Form 2</h2>
+//       <Formik initialValues={{}} onSubmit={handleSubmitForm2}>
+//         {({ isSubmitting }) => (
+//           <Form>
+//             <Field type="text" name="field2" placeholder="Field 2" />
+//             <button type="submit" disabled={isSubmitting}>
+//               Submit Form 2
+//             </button>
+//           </Form>
+//         )}
+//       </Formik>
+//     </div>
+//   );
+// };
+
+// export default MyComponent;

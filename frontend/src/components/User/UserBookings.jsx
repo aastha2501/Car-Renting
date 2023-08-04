@@ -1,9 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import Button from 'react-bootstrap/Button';
+import Modal from 'react-bootstrap/Modal';
+import { ToastContainer, toast } from 'react-toastify';
 
 export default function UserBookings() {
 
     const [data, setData] = useState();
+    const [cancelPopup, setCancelPopup] = useState();
+    const [productId, setProductId] = useState();
 
     var token = JSON.parse(localStorage.getItem("token"));
     useEffect(() => {
@@ -12,17 +17,55 @@ export default function UserBookings() {
                 "Authorization": `Bearer ${token}`
             }
         }).then((response) => {
-            // console.log(response.data);
+         
             setData(response.data);
+
         }).catch((error) => {
             console.log(error);
         })
-    }, []);
+    }, [data]);
 
+    const handleCancel = (id) => {
+        console.log(id);
+        setProductId(id);
+        setCancelPopup(true);
+    }
+
+    const handleCancelSuccess = (productId) => {
+        console.log(productId);
+        axios
+        .delete("https://localhost:7104/CancelBooking/" + productId, {
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        }).then((response) => {
+            console.log(response.data);
+            setCancelPopup(false);
+            toast.error("Cancelled!!");
+        }).catch((error) => {
+            console.log(error);
+        })
+    }   
+
+    const handleDeleteClose = () => {
+        setCancelPopup(false);
+    }
     return (
         <div>
+             <ToastContainer
+              position="bottom-center"
+              autoClose={5000}
+              hideProgressBar={false}
+              newestOnTop={false}
+              closeOnClick
+              rtl={false}
+              pauseOnFocusLoss
+              draggable
+              pauseOnHover
+              theme="dark"
+            />
             <div className="mt-3 table-resposive p-3">
-                <table className='table table-bordered table-hover'>
+                <table className='table table-hover'>
                     <thead className='table-light'>
                         <tr>
                             <th scope="col">Image</th>
@@ -32,6 +75,7 @@ export default function UserBookings() {
                             <th scope="col">Drop off(Date/Time)</th>
                             <th scope="col">Price per hour &#8377;</th>
                             <th scope="col">Total Price &#8377;</th>
+                            <th scope="col">Cancel</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -48,10 +92,12 @@ export default function UserBookings() {
                                         <td>{item.endDate}</td>
                                         <td>{item.pricePerHour}/-</td>
                                         <td>{item.totalPrice}/-</td>
-                                        {/* <td> */}
-                                        {/* <button className='btn btn-danger' onClick={() => handleDelete(item.productId)}>Delete</button>
-                      {" "} <button className="btn btn-info" onClick={() => EditProduct(item.productId)}>Edit</button> */}
-                                        {/* </td> */}
+                                        <td>
+                                            {
+                                                item.isCancelled == true ? <button className='btn' disabled style={{ backgroundColor: "tomato", color: "white" }}>Cancel</button> :  <button className='btn' onClick={() => handleCancel(item.id)} style={{ backgroundColor: "tomato", color: "white" }}>Cancel</button>
+                                            }
+                                           
+                                        </td>
                                     </tr>
                                 })
                             )
@@ -60,6 +106,32 @@ export default function UserBookings() {
                     </tbody>
                 </table>
             </div>
+
+            {
+        cancelPopup && (
+          <Modal centered show={cancelPopup}>
+            <Modal.Header>
+              <Modal.Title>Cancel Product</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <p>are you sure you want to cancel?</p>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button variant="danger" onClick={() => handleCancelSuccess(productId)}>
+                Yes
+              </Button>
+              <Button variant="primary" onClick={handleDeleteClose}>
+                No
+              </Button>
+
+              <Button variant="secondary" onClick={handleDeleteClose}>
+                Close
+              </Button>
+
+            </Modal.Footer>
+          </Modal>
+        )
+      }
         </div>
     )
 }

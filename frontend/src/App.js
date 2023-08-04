@@ -8,6 +8,8 @@ import Dashboard from './components/User/UserDashboard';
 import Profile from './components/User/Profile';
 import Home from './components/Home';
 import UserBookings from './components/User/UserBookings';
+import Brands from './components/Admin/Brands';
+import Bookings from './components/Admin/Bookings';
 
 function App() {
   return (
@@ -22,6 +24,8 @@ function App() {
       <Route path='/dashboard' element={<Dashboard/>}/>
       <Route path='/profile/:userId' element={<Profile/>}/>
       <Route path='/bookings/:userId' element={<UserBookings/>}/>
+      <Route path='/bookings' element={<Bookings/>}/>
+      <Route path='/brands' element={<Brands/>}/>
      </Routes>
     </BrowserRouter>
     </>
