@@ -1,16 +1,18 @@
-import React, {useContext, useState} from 'react';
+import React, { useContext, useState } from 'react';
 import "../styles/login.css";
 import { Link, useNavigate } from 'react-router-dom';
 import { useFormik } from 'formik';
 import axios from 'axios';
 import jwt from "jwt-decode";
 import { NavbarContext } from '../MyContext';
+import Spinner from 'react-bootstrap/Spinner';
 
 export default function Login() {
     const navigate = useNavigate();
-    const {user} = useContext(NavbarContext);
+    const { user } = useContext(NavbarContext);
     const [userValue, setUserValue] = user;
     const [error, setError] = useState();
+    const [loading, setLoading] = useState(false);
 
     const validate = values => {
         let errors = {}
@@ -32,31 +34,32 @@ export default function Login() {
         onSubmit: values => {
             // debugger;
             console.log(values);
+            setLoading(true);
             axios
                 .post("https://localhost:7104/api/Account/login", values)
                 .then((response) => {
 
                     const claims = jwt(response.data.token);
                     const token = response.data.token;
-                //    setT(response.data.token);
+                    //    setT(response.data.token);
 
                     localStorage.setItem('token', JSON.stringify(response.data.token));
 
                     const role = claims["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
 
-                        if (token) {
-                           axios
-                             .get("https://localhost:7104/api/Account/profile", {
-                               headers: {
-                                 "Authorization": `Bearer ${token}`
-                               }
-                             })
-                             .then((response) => {
-                               setUserValue(response.data);
-                             }).catch((error) => {
-                               console.log(error);
-                             })
-                         }
+                    if (token) {
+                        axios
+                            .get("https://localhost:7104/api/Account/profile", {
+                                headers: {
+                                    "Authorization": `Bearer ${token}`
+                                }
+                            })
+                            .then((response) => {
+                                setUserValue(response.data);
+                            }).catch((error) => {
+                                console.log(error);
+                            })
+                    }
 
                     if (role == "Admin") {
                         navigate("/admin")
@@ -84,7 +87,6 @@ export default function Login() {
             <div className='homeWrapper'>
                 <div className='loginWrapper'>
                     <form className='form' onSubmit={formik.handleSubmit}>
-                     
                         <h4 className='textAlign'>Login</h4>
                         {error && <div className='error text-center'><b>{error}</b></div>}
                         <div className="mb-3">
@@ -98,7 +100,14 @@ export default function Login() {
                             {formik.touched.password && formik.errors.password ? <div className='form-error error'><i class="fa fa-triangle-exclamation"></i> {formik.errors.password}</div> : null}
                         </div>
                         <div className="mb-3 text-center">
-                            <button type="submit" className="btnDarkColor">Login</button>
+                            {loading ? <>
+                            <span>Loading....</span>
+                            </> : <button type="submit" className="btnDarkColor">
+                                <>
+                                    Login
+                                </>
+                            </button>
+                            }
                         </div>
                         <div style={{ textAlign: "center" }}>
                             <p>Don't have an account? <Link to="/signup">Signup</Link></p>

@@ -14,6 +14,7 @@ namespace BAL.Helpers
         public ApplicationMapper()
         {
             CreateMap<BrandRequestModel, Brand>();
+           
         }
     }
 }

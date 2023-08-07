@@ -13,8 +13,8 @@ namespace Shared.DTO
         public string Brand { get; set; }
         public decimal PricePerHour { get; set; }
         public decimal TotalPrice { get; set; }
-        public DateTime StartDate { get; set; }
-        public DateTime EndDate { get; set; }   
+        public string StartDate { get; set; }
+        public string EndDate { get; set; }   
         public string Image { get; set; }
         public bool IsCancelled { get; set; } 
     }

@@ -9,6 +9,7 @@ import Dates from '../DatePicker';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom';
+import { Pagination } from '@mui/material';
 
 export default function Dashboard() {
 
@@ -18,6 +19,9 @@ export default function Dashboard() {
   const [productId, setProductId] = useState();
   const [carData, setCarData] = useState();
   const [loading, setLoading] = useState(false);
+  const [pageNumber, setPageNumber] = useState(1);
+  const [pageSize, setPageSize] = useState(4);
+  const [totalPages, setTotalPages] = useState();
 
 
   const d = JSON.parse(localStorage.getItem("dates"));
@@ -52,16 +56,17 @@ export default function Dashboard() {
       navigate("/");
     }
     axios
-      .post("https://localhost:7104/api/User/findCars", date)
+      .post(`https://localhost:7104/api/User/findCars?pageNumber=${pageNumber}&pageSize=${pageSize}`, date)
       .then((response) => {
-        console.log(response.data);
-        setData(response.data);
+        // console.log(response.data.totalPages);
+        setTotalPages(response.data.totalPages);
+        setData(response.data.data);
         setLoading(false);
       }).catch((error) => {
         console.log(error);
         setLoading(false);
       })
-  }, [date]);
+  }, [date, pageNumber]);
 
   // book now
   const formik = useFormik({
@@ -132,11 +137,13 @@ export default function Dashboard() {
       navigate("/login");
     }
   }
-
+  const handleChange = (event, value) => {
+    setPageNumber(value);
+  }
   return (
     <>
       {
-        loading ? <Spinner animation="grow" variant="secondary" />
+        loading ? <Spinner className="spinner" animation="grow" variant="secondary" />
           : (<div className='user-home-wrapper container'>
             <ToastContainer
               position="bottom-center"
@@ -175,6 +182,10 @@ export default function Dashboard() {
                 })
               }
             </div>
+
+            <div className="pager">
+            <Pagination count={totalPages} page = {pageNumber} onChange={handleChange}/>
+        </div>
             <div>
               {
                 show && (

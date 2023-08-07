@@ -9,3 +9,8 @@
     opacity: 1;
     color: white;
 }
+.pager {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

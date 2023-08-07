@@ -2,7 +2,9 @@
 using DAL.Model;
 using DAL.Repository;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Shared.DTO;
+using Shared.DTO.Paging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,12 +33,7 @@ namespace BAL.Services.Implementation
         {
             try
             {
-                var brand = new Brand()
-                {
-                    Id = Guid.NewGuid(),
-                    Name = model.Name
-                };
-                // var brand = _mapper.Map<Brand>(model);
+                var brand = _mapper.Map<Brand>(model);
                 await _brandRepository.AddAsync(brand);
                 return brand;
             }
@@ -52,13 +49,14 @@ namespace BAL.Services.Implementation
                 {
                     var product = new ProductResponseModel()
                     {
-                         CarModel = res.Model, 
-                         Brand = brandName, 
-                         PricePerHour = res.PricePerHour,
-                         Image = res.ImageUrl,
-                         Seats = res.Seats,
-                         ProductId = id
+                        CarModel = res.Model,
+                        Brand = brandName,
+                        PricePerHour = res.PricePerHour,
+                        Image = res.ImageUrl,
+                        Seats = res.Seats,
+                        ProductId = id
                     };
+                   
                     return product;
                 } 
                 else
@@ -127,6 +125,7 @@ namespace BAL.Services.Implementation
 
                     productList.Add(productListObj);
                 }
+
                 return productList;
                 
             }
@@ -309,8 +308,8 @@ namespace BAL.Services.Implementation
                         Brand = brandName,
                         PricePerHour = carDetails.PricePerHour,
                         TotalPrice = b.TotalRent,
-                        StartDate = b.From,
-                        EndDate = b.To,
+                        StartDate = b.From.ToString("MM/dd/yyyy h:mm tt"),
+                        EndDate = b.To.ToString("MM/dd/yyyy h:mm tt"),
                         IsCancelled = check,
                         Image = carDetails.ImageUrl,
                         
@@ -342,8 +341,8 @@ namespace BAL.Services.Implementation
                         UserName = user.FirstName,
                         Model = carDetails.Model,
                         Brand = brandName,
-                        StartDate = b.From,
-                        EndDate = b.To,
+                        StartDate = b.From.ToString("MM/dd/yyyy h:mm tt"),
+                        EndDate = b.To.ToString("MM/dd/yyyy h:mm tt"),
                         TotalRent = b.TotalRent
                     };
                     allBookings.Add(booking);

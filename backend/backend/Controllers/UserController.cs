@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Common;
 using Shared.DTO;
+using Shared.DTO.Paging;
 using System.Security.Claims;
 
 namespace backend.Controllers
@@ -25,17 +26,60 @@ namespace backend.Controllers
         }
 
         [HttpGet("getall")]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] PaginationFilter filter)
         {
-            var response = new ApiResponse();
+            var res = new ApiResponse();
+            var response = new PagedResponse();
             try
             {
+                var validFilter = new PaginationFilter(filter.PageNumber, filter.PageSize);
+
                 var productList = await _productService.GetAll();
-                if(productList != null)
+                if (productList != null)
                 {
-                    response.Data = productList;
-                    return Ok(response.Data);
+                   
+                    var pagedData = productList.Skip((validFilter.PageNumber - 1) * validFilter.PageSize).Take(validFilter.PageSize).ToList();
+                    if (pagedData != null)
+                    {
+                        response.Data = pagedData;
+                        var totalPages = productList.Count() / (double)validFilter.PageSize;
+                        response.TotalPages = Convert.ToInt32(Math.Ceiling(totalPages));
+                        return Ok(response);
+                    }
                 }
+                throw new Exception("Failed to load");
+            }
+            catch (Exception ex)
+            {
+                res.Success = false;
+                res.ErrorMessage = ex.Message;
+                return BadRequest(res);
+            }
+        }
+
+        [HttpPost("findCars")]
+        public async Task<IActionResult> FindCars(FindCarModel model, [FromQuery] PaginationFilter filter)
+            {
+            var res = new ApiResponse();
+            var response = new PagedResponse();
+            try
+            {
+                var validFilter = new PaginationFilter(filter.PageNumber, filter.PageSize);
+
+                var productList = await _productService.FindAvailability(model);
+                if (productList != null)
+                {
+
+                    var pagedData = productList.Skip((validFilter.PageNumber - 1) * validFilter.PageSize).Take(validFilter.PageSize).ToList();
+                    if (pagedData != null)
+                    {
+                        response.Data = pagedData;
+                        var totalPages = productList.Count() / (double)validFilter.PageSize;
+                        response.TotalPages = Convert.ToInt32(Math.Ceiling(totalPages));
+                        return Ok(response);
+                    }
+                }
+
                 throw new Exception("Failed to load");
             }
             catch (Exception ex)
@@ -121,23 +165,6 @@ namespace backend.Controllers
                 var res = await _productService.BookingCar(model, userId);
                 response.Data = res;
                 return Ok(response.Data);   
-            }
-            catch (Exception ex)
-            {
-                response.Success = false;
-                response.ErrorMessage = ex.Message;
-                return BadRequest(response);
-            }
-        }
-        [HttpPost("findCars")]
-        public async Task<IActionResult> FindCars(FindCarModel model)
-        {
-            var response = new ApiResponse();
-            try
-            {
-                var res = await _productService.FindAvailability(model);
-                response.Data = res;
-                return Ok(response.Data);
             }
             catch (Exception ex)
             {

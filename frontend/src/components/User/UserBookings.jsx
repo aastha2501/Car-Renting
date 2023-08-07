@@ -71,8 +71,8 @@ export default function UserBookings() {
                             <th scope="col">Image</th>
                             <th scope="col">Model</th>
                             <th scope="col">Brand</th>
-                            <th scope="col">Pick up(Date/Time)</th>
-                            <th scope="col">Drop off(Date/Time)</th>
+                            <th scope="col">Pick up(Date/Time) <i class="fa-solid fa-calendar-days"></i></th>
+                            <th scope="col">Drop off(Date/Time) <i class="fa-solid fa-calendar-days"></i></th>
                             <th scope="col">Price per hour &#8377;</th>
                             <th scope="col">Total Price &#8377;</th>
                             <th scope="col">Cancel</th>
@@ -80,7 +80,7 @@ export default function UserBookings() {
                     </thead>
                     <tbody>
                         {
-                            data && (
+                            data ? (
                                 data.map((item, i) => {
                                     return <tr key={i}>
                                         <td>
@@ -100,10 +100,9 @@ export default function UserBookings() {
                                         </td>
                                     </tr>
                                 })
-                            )
+                            ) : <div>no bookings</div>
                         }
-
-                    </tbody>
+                   </tbody>
                 </table>
             </div>
 

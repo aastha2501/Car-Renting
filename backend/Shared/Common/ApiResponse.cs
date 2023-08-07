@@ -12,5 +12,6 @@ namespace Shared.Common
         public string Message { get; set; }
         public string ErrorMessage { get; set; }
         public object Data { get; set; }
+        
     }
 }
