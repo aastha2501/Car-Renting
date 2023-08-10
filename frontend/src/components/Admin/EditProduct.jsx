@@ -50,9 +50,6 @@ export default function EditProduct() {
             seats: ""
         },
         onSubmit: (values, { resetForm }) => {
-            console.log(values);
-
-            //axios call
             axios
                 .put("https://localhost:7104/api/Admin/editCarDetails/" + id, values, {
                     headers: {
@@ -60,7 +57,6 @@ export default function EditProduct() {
                     }
                 })
                 .then((response) => {
-                    console.log(response.data);
                     toast.success("Updated successfully!!");
 
                 }).catch((error) => {

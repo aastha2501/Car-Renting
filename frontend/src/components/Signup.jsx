@@ -42,7 +42,6 @@ export default function Signup() {
             axios
                 .post("https://localhost:7104/api/Account/signup", values)
                 .then((response) => {
-                    console.log(response);
                     navigate("/login");
                 }).catch((error) => {
                     console.log(error);

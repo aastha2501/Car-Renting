@@ -13,7 +13,6 @@ export default function Navbar() {
 
   const { user } = useContext(NavbarContext);
   const [userValue] = user;
-//  console.log(user);
   const navigate = useNavigate();
   var t = JSON.parse(localStorage.getItem("token"))
   useEffect(() => {

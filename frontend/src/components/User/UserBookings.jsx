@@ -26,20 +26,17 @@ export default function UserBookings() {
     }, [data]);
 
     const handleCancel = (id) => {
-        console.log(id);
         setProductId(id);
         setCancelPopup(true);
     }
 
     const handleCancelSuccess = (productId) => {
-        console.log(productId);
         axios
         .delete("https://localhost:7104/CancelBooking/" + productId, {
             headers: {
                 "Authorization": `Bearer ${token}`
             }
         }).then((response) => {
-            console.log(response.data);
             setCancelPopup(false);
             toast.error("Cancelled!!");
         }).catch((error) => {

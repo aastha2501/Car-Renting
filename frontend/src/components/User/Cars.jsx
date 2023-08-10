@@ -32,15 +32,12 @@ export default function Cars() {
     const timeDifference = endDateTime - startDateTime;
 
     const hoursDifference = timeDifference / (1000 * 60 * 60);
-    // setTotalPrice(hoursDifference);
+
     return hoursDifference;
   }
 
 
-
-  // console.log(d);
   useEffect(() => {
-// debugger;
     setLoading(true);
     axios
       .post("https://localhost:7104/api/User/findCars", d, {
@@ -49,7 +46,6 @@ export default function Cars() {
         }
       })
       .then((response) => {
-        // console.log(response.data);
         setData(response.data);
         setLoading(false);
       }).catch((error) => {
@@ -65,17 +61,9 @@ export default function Cars() {
       endDate: ''
     },
     onSubmit: (values, { resetForm }) => {
-
-      // resetForm();
-
-      // console.log(productId);
       const price = carData.pricePerHour;
-      // console.log(price);
       const hours = calculateHoursDiff();
-      // console.log(hours);
       const total = price * hours;
-      // console.log(total);
-
       var data = {
         ProductId: productId,
         StartDate: values.startDate,
@@ -90,13 +78,12 @@ export default function Cars() {
             "Authorization": `Bearer ${token}`
           }
         }).then((response) => {
-          console.log(response.data);
           setShow(false);
           toast.success("Car Booked successfully!!");
         }).catch((error) => {
           console.log(error);
         })
-      
+
     },
 
   })
@@ -109,21 +96,16 @@ export default function Cars() {
   }, []);
   const handleClose = () => {
     setShow(false);
-    // formik.resetForm();
   }
 
   const handleRentClick = (productId) => {
-    // console.log(productId);
     setProductId(productId);
-
-
 
     axios.get("https://localhost:7104/api/User/getCar/" + productId, {
       headers: {
         "Authorization": `Bearer ${token}`
       }
     }).then((response) => {
-      console.log(response.data);
       setCarData(response.data);
 
       setShow(true);
@@ -152,7 +134,7 @@ export default function Cars() {
               pauseOnHover
               theme="dark"
             />
-           
+
             <div className='row mt-4'>
               {
                 data && data.map((item, i) => {

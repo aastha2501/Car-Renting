@@ -19,7 +19,7 @@ export default function Brands() {
                 }
             })
             .then((response) => {
-                // console.log(response.data.result);
+              
                 setData(response.data.result);
 
             }).catch((error) => {
@@ -47,7 +47,6 @@ export default function Brands() {
               }
             })
             .then((response) => {
-              console.log(response.data);
               setShow(false);
     
             }).catch((error) => {

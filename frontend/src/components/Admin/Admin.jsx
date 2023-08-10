@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import "../../styles/admindashboard.css";
-import  { useFormik} from "formik";
+import { useFormik } from "formik";
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import axios from 'axios';
@@ -31,8 +31,8 @@ export default function Admin() {
       }
     })
       .then((res) => {
-       setTotalPages(res.data.totalPages);
-         setData(res.data.data);
+        setTotalPages(res.data.totalPages);
+        setData(res.data.data);
       }).catch((err) => {
         console.log(err);
       })
@@ -55,13 +55,13 @@ export default function Admin() {
     let errors = {}
     if (!values.model) {
       errors.model = 'Required'
-    } 
+    }
     if (!values.brand) {
       errors.brand = 'Required'
     }
     if (!values.seats) {
       errors.seats = 'Required'
-    } 
+    }
     if (!values.pricePerHour) {
       errors.pricePerHour = 'Required'
     }
@@ -118,7 +118,6 @@ export default function Admin() {
   }
 
   const handleDelete = (id) => {
-    console.log(id);
     setProductId(id);
     setDeletePopup(true);
   }
@@ -140,7 +139,7 @@ export default function Admin() {
   }
 
   const EditProduct = (id) => {
-    console.log(id);
+   
     navigate(`/edit/${id}`);
   }
 
@@ -153,13 +152,13 @@ export default function Admin() {
   }
   return (
 
-    <div> 
+    <div>
 
       <div className="mt-3" style={{ textAlign: "center" }}>
         <button className='btn addBtn' onClick={handleAdd}>Add Product</button>
       </div>
       <div className="mt-3 table-resposive p-3" style={{ overflowX: "auto" }}>
-      
+
         <table className='table table-hover'>
           <thead className='table-light'>
             <tr>
@@ -184,12 +183,12 @@ export default function Admin() {
                     <td>{item.seats}</td>
                     <td>{item.pricePerHour}/-</td>
                     <td>
-                      
+
                       <button className="btn btn-info" onClick={() => EditProduct(item.productId)}>
-                      <i className="fa-solid fa-pen-to-square" style={{color: "white"}}></i>
+                        <i className="fa-solid fa-pen-to-square" style={{ color: "white" }}></i>
                       </button>
                       {" "}<button className='btn btn-danger' onClick={() => handleDelete(item.productId)}>
-                      <i className="fa-solid fa-trash-can"></i>
+                        <i className="fa-solid fa-trash-can"></i>
                       </button>
                     </td>
                   </tr>
@@ -199,20 +198,20 @@ export default function Admin() {
           </tbody>
         </table>
         <div className="pager">
-            <Pagination count={totalPages} page = {pageNumber} onChange={handleChange}/>
+          <Pagination count={totalPages} page={pageNumber} onChange={handleChange} />
         </div>
         <ToastContainer
-              position="bottom-center"
-              autoClose={5000}
-              hideProgressBar={false}
-              newestOnTop={false}
-              closeOnClick
-              rtl={false}
-              pauseOnFocusLoss
-              draggable
-              pauseOnHover
-              theme="dark"
-            />
+          position="bottom-center"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="dark"
+        />
       </div>
       {/* add product */}
       {
@@ -222,7 +221,7 @@ export default function Admin() {
               <Modal.Title>Add Product</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-            
+
               <form onSubmit={formik.handleSubmit} encType="multipart/form-data">
 
                 <select name="brand" onChange={formik.handleChange} className='form-select' aria-label="Default select example">
@@ -272,9 +271,6 @@ export default function Admin() {
           </Modal>
         )
       }
-
-   
-
       {/* delete product */}
       {
         deletePopup && (
@@ -303,68 +299,8 @@ export default function Admin() {
       }
 
 
-      
+
     </div>
   )
 }
 
-   {/* edit product */}
-  //  {
-  //   editBox && (
-  //     <Modal show={editBox} centered>
-  //       <Modal.Header>
-  //         <Modal.Title>Edit Product</Modal.Title>
-  //       </Modal.Header>
-  //       <Modal.Body>
-          
-  //         <Formik initialValues={{
-  //           pricePerHour: '',
-  //           image: ''
-  //         }} onSubmit={handleEditSumbit}>
-  //           {({ isSubmitting }) => (
-  //             <Form>
-  //               <div className="mb-3">
-  //                 <label htmlFor="pricePerHour" className="form-label">Price per hour</label>
-  //                 <input type="number" step="0.01" name="pricePerHour" id="pricePerHour" className="form-control" onChange={formik.handleChange} onBlur={formik.handleBlur} value={formik.values.pricePerHour} />
-  //               </div>
-
-  //               <div className="mb-3">
-  //                 <label htmlFor="image" className="form-label">Image</label>
-  //                 <input type="file" name="image" id="image" className="form-control" onChange={(e) => formik.setFieldValue("image", e.currentTarget.files[0])} onBlur={formik.handleBlur} />
-  //               </div>
-  //               <button type="submit" className='btn btn-dark' disabled={isSubmitting}>
-  //                 Edit
-  //               </button>
-               
-  //             </Form>
-  //           )}
-  //         </Formik>
-
-          {/* <form onSubmit={formik.handleSubmit} encType="multipart/form-data">
-
-            <div className="mb-3">
-              <label htmlFor="pricePerHour" className="form-label">Price per hour</label>
-              <input type="number" step="0.01" name="pricePerHour" id="pricePerHour" className="form-control" onChange={formik.handleChange} onBlur={formik.handleBlur} value={formik.values.pricePerHour} />
-              {formik.touched.pricePerHour && formik.errors.pricePerHour ? <div className='form-error'>{formik.errors.pricePerHour}</div> : null}
-            </div>
-
-            <div className="mb-3">
-              <label htmlFor="image" className="form-label">Image</label>
-              <input type="file" name="image" id="image" className="form-control" onChange={(e) => formik.setFieldValue("image", e.currentTarget.files[0])} onBlur={formik.handleBlur} />
-              {formik.touched.image && formik.errors.image ? <div className='form-error'>{formik.errors.image}</div> : null}
-            </div>
-
-            <div className='mb-3 text-center'>
-              <button className='btn btn-primary' type='submit'>Edit</button>
-            </div>
-          </form> */}
-        {/* </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleClose}>
-            Close
-          </Button>
-
-        </Modal.Footer>
-      </Modal>
-    )
-  } */}

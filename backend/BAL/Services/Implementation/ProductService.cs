@@ -84,7 +84,7 @@ namespace BAL.Services.Implementation
                     BrandId = model.BrandId,
                     Seats = model.Seats
                 };
-                //var product = _mapper.Map<Car>(model);
+                
                 await _carRepository.AddAsync(product);
                 return product;
             }

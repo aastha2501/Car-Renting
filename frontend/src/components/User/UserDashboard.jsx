@@ -58,7 +58,6 @@ export default function Dashboard() {
     axios
       .post(`https://localhost:7104/api/User/findCars?pageNumber=${pageNumber}&pageSize=${pageSize}`, date)
       .then((response) => {
-        // console.log(response.data.totalPages);
         setTotalPages(response.data.totalPages);
         setData(response.data.data);
         setLoading(false);
@@ -96,7 +95,6 @@ export default function Dashboard() {
             "Authorization": `Bearer ${token}`
           }
         }).then((response) => {
-          console.log(response.data);
           setShow(false);
           toast.success("Car Booked successfully!!");
         }).catch((error) => {
@@ -114,7 +112,6 @@ export default function Dashboard() {
   }, []);
   const handleClose = () => {
     setShow(false);
-    // formik.resetForm();
   }
 
   const handleRentClick = (productId) => {
@@ -126,7 +123,6 @@ export default function Dashboard() {
           "Authorization": `Bearer ${token}`
         }
       }).then((response) => {
-        console.log(response.data);
         setCarData(response.data);
 
         setShow(true);

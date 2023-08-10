@@ -18,7 +18,6 @@ export default function Profile() {
   const [firstName, setFirstName] = useState();
   const [lastName, setLastName] = useState();
 
-  const [formData, updateFormData] = useState();
   const validate = values => {
     let errors = {}
 
@@ -43,7 +42,6 @@ export default function Profile() {
         }
       })
       .then((response) => {
-        //console.log(response.data);
 
         const email = response.data.email;
         const firstName = response.data.firstName;
@@ -72,7 +70,7 @@ export default function Profile() {
     inputRef.current.click();
   }
 
-  //console.log(image);
+ 
   const formik = useFormik({
     initialValues: {
       firstName: '',
@@ -95,7 +93,6 @@ export default function Profile() {
           }
         })
         .then((response) => {
-          console.log(response.data);
           setFirstName(response.data.firstName);
           setLastName(response.data.lastName);
           setEmail(response.data.email);

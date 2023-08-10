@@ -31,14 +31,8 @@ export default function Dates({
         },
         onSubmit: values => {
             localStorage.setItem('dates', JSON.stringify(values));
-            // if (token) {
             navigate("/dashboard");
-            // }
-            // else {
-            // navigate("/login");
-            // }
             setCallBack(values);
-
         }
     });
     return (
@@ -54,7 +48,6 @@ export default function Dates({
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
                         value={formik.values.startDate} 
-                       // min={new Date().toISOString().split('T')[0]}
                         />
                     {formik.touched.startDate && formik.errors.startDate && (
                         <div style={{ color: 'rgb(225 181 0)', position: "absolute", fontSize: "13px", fontWeight: "bold" }}><i class="fa fa-triangle-exclamation"></i>{formik.errors.startDate}</div>

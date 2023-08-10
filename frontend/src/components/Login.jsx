@@ -32,8 +32,7 @@ export default function Login() {
             email: ''
         },
         onSubmit: values => {
-            // debugger;
-            console.log(values);
+           
             setLoading(true);
             axios
                 .post("https://localhost:7104/api/Account/login", values)
@@ -41,7 +40,6 @@ export default function Login() {
 
                     const claims = jwt(response.data.token);
                     const token = response.data.token;
-                    //    setT(response.data.token);
 
                     localStorage.setItem('token', JSON.stringify(response.data.token));
 
@@ -67,7 +65,6 @@ export default function Login() {
                         if (localStorage.getItem("dates") == null) {
                             navigate("/");
                         }
-                        // window.location.reload();
                         else {
                             navigate(`/dashboard`);
                         }
@@ -119,16 +116,3 @@ export default function Login() {
         </>
     )
 }
-
-
-{/* <div className="row">
-<div className='col-6'>
-    <label htmlFor="firstName" className="form-label">First name</label>
-    <input type="text" name="firstName" id="firstName" className="form-control" onChange={formik.handleChange} onBlur={formik.handleBlur} value={formik.values.firstName} />
-    {formik.touched.firstName && formik.errors.firstName ? <div className='form-error'>{formik.errors.firstName}</div> : null}
-</div>
-<div className="col-6">
-    <label htmlFor="lastName" className="form-label">Last name</label>
-    <input type="text" name="lastName" id="lastName" className="form-control" onChange={formik.handleChange} onBlur={formik.handleBlur} value={formik.values.lastName} />
-</div>
-</div> */}
