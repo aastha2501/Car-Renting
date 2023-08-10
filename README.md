@@ -9,6 +9,7 @@ Use of formik for forms.
 Server-side pagination implemented
 Three-tier architecture followed in backend - services, repository
 Use of DTO.
+Implemented context-api.
 
 
 # Below are some screenshots
