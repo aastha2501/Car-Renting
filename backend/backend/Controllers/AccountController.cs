@@ -1,4 +1,5 @@
-﻿using BAL.Services;
+﻿using BAL.Helpers;
+using BAL.Services;
 using DAL.Model;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -101,34 +102,72 @@ namespace backend.Controllers
         [HttpPost("signup")]
         public async Task<IActionResult> Signup(SignupModel model)
         {
-            var isExists = await _userManager.FindByEmailAsync(model.Email);
-            if(isExists == null)
+            var response = new ApiResponse();
+            try
             {
-                var user = new User()
+                var isExists = await _userManager.FindByEmailAsync(model.Email);
+                if (isExists == null)
                 {
-                    UserName = model.Email,
-                    FirstName = model.FirstName,
-                    Email = model.Email,
-                    NormalizedEmail = model.Email,
-                    LastName = model.LastName
-                };
+                    var user = new User()
+                    {
+                        UserName = model.Email,
+                        FirstName = model.FirstName,
+                        Email = model.Email,
+                        NormalizedEmail = model.Email,
+                        LastName = model.LastName
+                    };
 
-                var result = await _userManager.CreateAsync(user, model.Password);
-                var allRoles = _roleManager.Roles.Select(x => x.Name).ToList();
+                    var result = await _userManager.CreateAsync(user, model.Password);
 
-                if(result.Succeeded)
-                {
-                    await _userManager.AddToRoleAsync(user, allRoles[1]);
-                    return Ok(new { User = user});
+                    var allRoles = _roleManager.Roles.Select(x => x.Name).ToList();
+
+                    if (result.Succeeded)
+                    {
+                        var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                        var confirmationLink = Url.Action(nameof(ConfirmEmail), "Account", new { token, email = user.Email }, protocol: HttpContext.Request.Scheme);
+
+                        EmailHelper emailHelper = new EmailHelper();
+                        bool emailResponse = emailHelper.SendEmail(user.Email, confirmationLink);
+
+                        if (emailResponse)
+                        {
+                            await _userManager.AddToRoleAsync(user, allRoles[1]);
+                            response.Success = true;
+                            response.Message = "Singup successful";
+                            response.Data = user;
+                            return Ok(response);
+                        }
+                        response.ErrorMessage = "Invalid Email";
+                    }
                 }
+            } catch (Exception ex) {
+                response.ErrorMessage = "Error while Sign up";
+            }
+            return BadRequest(response);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ConfirmEmail(string token, string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+
+            var response = new ApiResponse();
+
+            if (user == null)
+            {
+                response.ErrorMessage = "Error";
+                return BadRequest(response);
             }
 
-            var response = new ResponseModel()
+            var result = await _userManager.ConfirmEmailAsync(user, token);
+            if(result.Succeeded)
             {
-                ErrorMessage = "User already exists with this Email Id"
-            };
-            return BadRequest(new { response.ErrorMessage });
-            
+                response.Success = true;
+                response.Message = "Confirmed email thanks";
+                return Ok(response);
+            }
+            response.ErrorMessage = "Error";
+            return BadRequest(response);
         }
 
         [HttpGet("profile")]

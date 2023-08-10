@@ -6,7 +6,7 @@ import Modal from 'react-bootstrap/Modal';
 import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
+import { useNavigate } from 'react-router-dom';
 import { Pagination } from '@mui/material';
 
 export default function Admin() {
@@ -20,7 +20,7 @@ export default function Admin() {
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(3);
   const [totalPages, setTotalPages] = useState();
-  
+  const navigate = useNavigate();
 
   const token = JSON.parse(localStorage.getItem('token'));
 
@@ -55,11 +55,14 @@ export default function Admin() {
     let errors = {}
     if (!values.model) {
       errors.model = 'Required'
-    } else if (!values.brand) {
+    } 
+    if (!values.brand) {
       errors.brand = 'Required'
-    } else if (!values.seats) {
+    }
+    if (!values.seats) {
       errors.seats = 'Required'
-    } else if (!values.pricePerHour) {
+    } 
+    if (!values.pricePerHour) {
       errors.pricePerHour = 'Required'
     }
 
@@ -138,26 +141,11 @@ export default function Admin() {
 
   const EditProduct = (id) => {
     console.log(id);
-    setEditBox(true);
-
-    axios
-      .get("https://localhost:7104/api/User/getCar/" + id, {
-        headers: {
-          "Authorization": `Bearer ${token}`
-        }
-      }).then((response) => {
-        console.log(response.data);
-      }).catch((error) => {
-        console.log(error);
-      })
+    navigate(`/edit/${id}`);
   }
 
   const handleDeleteClose = () => {
     setDeletePopup(false);
-  }
-
-  const handleEditSumbit = (values, { resetForm }) => {
-    console.log(values);
   }
 
   const handleChange = (event, value) => {
@@ -168,12 +156,12 @@ export default function Admin() {
     <div> 
 
       <div className="mt-3" style={{ textAlign: "center" }}>
-        <button className='btn addBtn' onClick={handleAdd}>Add </button>
+        <button className='btn addBtn' onClick={handleAdd}>Add Product</button>
       </div>
       <div className="mt-3 table-resposive p-3" style={{ overflowX: "auto" }}>
       
         <table className='table table-hover'>
-          <thead className='table-dark'>
+          <thead className='table-light'>
             <tr>
               <th scope="col">Image</th>
               <th scope="col">Model</th>
@@ -197,9 +185,9 @@ export default function Admin() {
                     <td>{item.pricePerHour}/-</td>
                     <td>
                       
-                      {/* <button className="btn btn-info" onClick={() => EditProduct(item.productId)}>
+                      <button className="btn btn-info" onClick={() => EditProduct(item.productId)}>
                       <i className="fa-solid fa-pen-to-square" style={{color: "white"}}></i>
-                      </button> */}
+                      </button>
                       {" "}<button className='btn btn-danger' onClick={() => handleDelete(item.productId)}>
                       <i className="fa-solid fa-trash-can"></i>
                       </button>
@@ -208,7 +196,6 @@ export default function Admin() {
                 })
               )
             }
-
           </tbody>
         </table>
         <div className="pager">
@@ -250,25 +237,25 @@ export default function Admin() {
                 <div className="mb-3">
                   <label htmlFor="model" className="form-label">Model</label>
                   <input type="text" name="model" id="model" className="form-control" onChange={formik.handleChange} onBlur={formik.handleBlur} value={formik.values.model} />
-                  {formik.touched.model && formik.errors.model ? <div className='form-error'>{formik.errors.model}</div> : null}
+                  {formik.touched.model && formik.errors.model ? <div className='form-error error'><i class="fa fa-triangle-exclamation"></i> {formik.errors.model}</div> : null}
                 </div>
 
                 <div className="mb-3">
                   <label htmlFor="seats" className="form-label">Seats</label>
                   <input type="number" name="seats" id="seats" className="form-control" onChange={formik.handleChange} onBlur={formik.handleBlur} value={formik.values.seats} />
-                  {formik.touched.seats && formik.errors.seats ? <div className='form-error'>{formik.errors.seats}</div> : null}
+                  {formik.touched.seats && formik.errors.seats ? <div className='form-error error'><i class="fa fa-triangle-exclamation"></i> {formik.errors.seats}</div> : null}
                 </div>
 
                 <div className="mb-3">
                   <label htmlFor="pricePerHour" className="form-label">Price per hour</label>
                   <input type="number" step="0.01" name="pricePerHour" id="pricePerHour" className="form-control" onChange={formik.handleChange} onBlur={formik.handleBlur} value={formik.values.pricePerHour} />
-                  {formik.touched.pricePerHour && formik.errors.pricePerHour ? <div className='form-error'>{formik.errors.pricePerHour}</div> : null}
+                  {formik.touched.pricePerHour && formik.errors.pricePerHour ? <div className='form-error error'><i class="fa fa-triangle-exclamation"></i> {formik.errors.pricePerHour}</div> : null}
                 </div>
 
                 <div className="mb-3">
                   <label htmlFor="image" className="form-label">Image</label>
                   <input type="file" name="image" id="image" className="form-control" onChange={(e) => formik.setFieldValue("image", e.currentTarget.files[0])} onBlur={formik.handleBlur} />
-                  {formik.touched.image && formik.errors.image ? <div className='form-error'>{formik.errors.image}</div> : null}
+                  {formik.touched.image && formik.errors.image ? <div className='form-error error'><i class="fa fa-triangle-exclamation"></i> {formik.errors.image}</div> : null}
                 </div>
 
                 <div className='mb-3 text-center'>
@@ -314,60 +301,12 @@ export default function Admin() {
           </Modal>
         )
       }
+
+
+      
     </div>
   )
 }
-
-
-
-
-
-// import React from 'react';
-// import { Formik, Form, Field } from 'formik';
-
-// const MyComponent = () => {
-//   const handleSubmitForm1 = (values, { resetForm }) => {
-//     // Handle submission of Form 1 here
-//     console.log('Form 1 submitted:', values);
-//     resetForm(); // Optionally reset the form after successful submission
-//   };
-
-//   const handleSubmitForm2 = (values, { resetForm }) => {
-//     // Handle submission of Form 2 here
-//     console.log('Form 2 submitted:', values);
-//     resetForm(); // Optionally reset the form after successful submission
-//   };
-
-//   return (
-//     <div>
-//       <h2>Form 1</h2>
-//       <Formik initialValues={{}} onSubmit={handleSubmitForm1}>
-//         {({ isSubmitting }) => (
-//           <Form>
-//             <Field type="text" name="field1" placeholder="Field 1" />
-//             <button type="submit" disabled={isSubmitting}>
-//               Submit Form 1
-//             </button>
-//           </Form>
-//         )}
-//       </Formik>
-
-//       <h2>Form 2</h2>
-//       <Formik initialValues={{}} onSubmit={handleSubmitForm2}>
-//         {({ isSubmitting }) => (
-//           <Form>
-//             <Field type="text" name="field2" placeholder="Field 2" />
-//             <button type="submit" disabled={isSubmitting}>
-//               Submit Form 2
-//             </button>
-//           </Form>
-//         )}
-//       </Formik>
-//     </div>
-//   );
-// };
-
-// export default MyComponent;
 
    {/* edit product */}
   //  {

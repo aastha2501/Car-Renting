@@ -91,7 +91,7 @@ export default function Signup() {
                         <button type="submit" className="btnDarkColor">Sign up</button>
                     </div>
                     <div style={{ textAlign: "center" }}>
-                        <p>Already have an account? <Link to="/login">Login</Link></p>
+                        <p>Already have an account? <Link to="/login" style={{color: "rgb(158, 12, 12)", fontWeight: 600}}>Login</Link></p>
                     </div>
                 </form>
             </div>

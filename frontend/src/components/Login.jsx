@@ -75,6 +75,7 @@ export default function Login() {
 
 
                 }).catch((error) => {
+                    setLoading(false);
                     console.log(error.response.data.errorMessage);
                     setError(error.response.data.errorMessage);
                 })
@@ -110,7 +111,7 @@ export default function Login() {
                             }
                         </div>
                         <div style={{ textAlign: "center" }}>
-                            <p>Don't have an account? <Link to="/signup">Signup</Link></p>
+                            <p>Don't have an account? <Link to="/signup" style={{color: "rgb(158, 12, 12)", fontWeight: 600}}>Signup</Link></p>
                         </div>
                     </form>
                 </div>

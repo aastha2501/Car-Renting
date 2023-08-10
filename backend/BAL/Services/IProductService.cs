@@ -16,7 +16,7 @@ namespace BAL.Services
         Task<Brand> AddBrand(BrandRequestModel model);
         Task<ProductResponseModel> GetCarById(Guid id);
         Task<IEnumerable<Brand>> GetAllBrands();
-        Task<Car> EditCarDetails(Guid id, ProductRequestModel model);
+        Task<Car> EditCarDetails(Guid id, EditModel model);
         Task<IEnumerable<Car>> SearchByBrand(Guid id);
         Task<BookedCar> BookingCar(BookingCarRequestModel model, string userId);
         Task<IEnumerable<ProductResponseModel>> FindAvailability(FindCarModel model);

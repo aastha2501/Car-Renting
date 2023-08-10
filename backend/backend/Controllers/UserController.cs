@@ -11,7 +11,7 @@ namespace backend.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-   
+     
     public class UserController : ControllerBase
     {
         private readonly IProductService _productService;
@@ -97,8 +97,12 @@ namespace backend.Controllers
             try
             {
                 var res = await _productService.GetCarById(id);
-                response.Data = res;
-                return Ok(response.Data);
+                if(res != null)
+                {
+                    response.Data = res;
+                    return Ok(response.Data);
+                }
+                throw new Exception("unable to get");
             }
             catch(Exception ex)
             {

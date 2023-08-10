@@ -2,7 +2,6 @@ import React, { useContext, useEffect, useState } from 'react';
 import "../../styles/navbar.css";
 import { Link, useNavigate } from 'react-router-dom';
 import jwt from "jwt-decode";
-import axios from 'axios';
 import { NavbarContext } from '../../MyContext';
 
 export default function Navbar() {

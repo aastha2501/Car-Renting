@@ -16,9 +16,9 @@ namespace BAL.Services.Implementation
 {
     public class ProductService : IProductService
     {
-        private readonly IGenericRepository<Car> _carRepository = null;
-        private readonly IGenericRepository<Brand> _brandRepository = null;
-        private readonly IGenericRepository<BookedCar> _bookCarRepository = null;
+        private readonly IGenericRepository<Car> _carRepository;
+        private readonly IGenericRepository<Brand> _brandRepository;
+        private readonly IGenericRepository<BookedCar> _bookCarRepository;
         private readonly IMapper _mapper;
         private readonly UserManager<User> _userManager;
         public ProductService(IGenericRepository<Car> carRepository, IGenericRepository<Brand> brandRepository, IGenericRepository<BookedCar> bookCarRepository, IMapper mapper, UserManager<User> userManager)
@@ -151,7 +151,7 @@ namespace BAL.Services.Implementation
                 throw ex;
             }
         }
-        public async Task<Car> EditCarDetails(Guid id, ProductRequestModel model)
+        public async Task<Car> EditCarDetails(Guid id, EditModel model)
         {
             try
             {
@@ -159,20 +159,10 @@ namespace BAL.Services.Implementation
 
                 if (product != null)
                 {
-                    product.Model = model.CarModel;
                     product.PricePerHour = model.PricePerHour;
-                    product.BrandId = model.BrandId;
                     product.Seats = model.Seats;
-
-                    if(model.Image != null)
-                    {
-                        product.Image = model.ImageName;
-                        product.ImageUrl = model.ImagePath;
-                    }
-
                     _carRepository.Save();
                     return product;
-
                 }
                 throw new ApplicationException("Unable to find this product");
 

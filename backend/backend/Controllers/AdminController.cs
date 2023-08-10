@@ -149,19 +149,12 @@ namespace backend.Controllers
         }
 
         [HttpPut("editCarDetails/{id:guid}")]
-        public async Task<IActionResult> EditCarDetails(Guid id, [FromForm] ProductRequestModel model)
+        public async Task<IActionResult> EditCarDetails(Guid id, EditModel model)
         {
             var response = new ApiResponse();
             try
             {
-                if (model.Image != null)
-                {
-                    var fileResult = SaveImage(model.Image);
-
-                    model.ImageName = fileResult.Item2; //getting the name of the image
-                    model.ImagePath = fileResult.Item1;  //getting the path of the image
-
-                }
+                
                 var res = _productService.EditCarDetails(id, model);
                 if (res != null)
                 {

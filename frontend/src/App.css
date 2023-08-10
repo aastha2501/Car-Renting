@@ -68,9 +68,9 @@
   
   transform: translate(-50%, -50%);
 }
-.row {
+/* .row {
   --bs-gutter-x: 0 !important;  
-}
+} */
 .error {
   color:  rgb(224, 158, 8);
 }
